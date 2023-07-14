@@ -1,0 +1,11 @@
+{
+    "@context": "\/api\/3\/contexts\/WorkflowCollection",
+    "@type": "WorkflowCollection",
+    "name": "08 - SOC Utilities",
+    "description": null,
+    "visible": true,
+    "image": null,
+    "uuid": "503555f4-07bd-4d56-b732-63defb0d3e76",
+    "deletedAt": null,
+    "recordTags": []
+}
