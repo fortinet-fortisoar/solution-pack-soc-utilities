@@ -5,10 +5,18 @@
     "type": "solutionpack",
     "local": true,
     "label": "SOC Utilities",
-    "dependencies": [],
+    "dependencies": [
+        {
+            "name": "sOARFramework",
+            "type": "solutionpack",
+            "label": "SOAR Framework",
+            "minVersion": null
+        }
+    ],
     "prerequisite": "",
     "publisher": "Fortinet CSE",
     "description": "This Solution pack is designed around utilities to aid in the use of SOAR",
+    "certified": "false",
     "help": null,
     "category": [
         "Utilities"

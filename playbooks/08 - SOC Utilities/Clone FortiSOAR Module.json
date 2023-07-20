@@ -4,7 +4,7 @@
     "name": "Clone FortiSOAR Module",
     "aliasName": null,
     "tag": null,
-    "description": null,
+    "description": "This playbook allows you to clone a FortiSOAR module",
     "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
