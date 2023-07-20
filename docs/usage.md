@@ -29,10 +29,10 @@ To use this playbook
 
 ![Playbook complete](./res/playbook_complete_dialog.png)
 
-    - Option 1: If you are ready to publish the changed click the **Publish** button
-    - Option 2: click the **Manual Review** button. you will need to manually publish by navigating the Modules section in the System Settings
+ - Option 1: If you are ready to publish the changed click the **Publish** button
+ - Option 2: click the **Manual Review** button. you will need to manually publish by navigating the Modules section in the System Settings
 
-8. The publish will take 1-2 minutes.
+1. The publish will take 1-2 minutes.
 
 ![Publish Message](./res/publish_message.png)
 
@@ -50,11 +50,11 @@ To use this playbook
 ![Module Permissions Message](./res/module_permissions.png)
 13.   Click **Save** at the bottom left
 
-    > **Note**
-    > Repeat steps 12 and 13 for adding permissions on other roles if needed
+> **Note**
+> Repeat steps 12 and 13 for adding permissions on other roles if needed
 
-    > **Caution**
-    > If you need playbooks to create records in this module, make sure the playbook appliance has the CRUD permissions neccesary to access the module
+> **Caution**
+> If you need playbooks to create records in this module, make sure the playbook appliance has the CRUD permissions neccesary to access the module
 14.   Navigate to the Navigation section of the settings
 
 ![Navigiation](./res/navigation.png)
