@@ -17,7 +17,7 @@
     "publisher": "Fortinet CSE",
     "description": "This Solution pack is designed around utilities to aid in the use of SOAR",
     "certified": "false",
-    "help": null,
+    "help": "https://github.com/fortinet-fortisoar/solution-pack-soc-utilities/blob/develop/README.md",
     "category": [
         "Utilities"
     ],
