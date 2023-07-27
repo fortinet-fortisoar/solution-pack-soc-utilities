@@ -1,0 +1,37 @@
+{
+    "name": "sOCUtilities",
+    "version": "1.0.0",
+    "fsrMinCompatibility": "7.4.0",
+    "type": "solutionpack",
+    "local": true,
+    "label": "SOC Utilities",
+    "dependencies": [
+        {
+            "name": "sOARFramework",
+            "type": "solutionpack",
+            "label": "SOAR Framework",
+            "minVersion": null
+        }
+    ],
+    "prerequisite": "",
+    "publisher": "Fortinet CSE",
+    "description": "This Solution pack is designed around utilities to aid in the use of SOAR",
+    "certified": "false",
+    "help": "https://github.com/fortinet-fortisoar/solution-pack-soc-utilities/blob/develop/README.md",
+    "category": [
+        "Utilities"
+    ],
+    "supportInfo": null,
+    "iconLarge": null,
+    "postInstallConfig": {
+        "enabled": false
+    },
+    "date": "2023-07-14T19:54:55+00:00",
+    "contents": {
+        "playbooks": [
+            {
+                "name": "08 - SOC Utilities"
+            }
+        ]
+    }
+}
