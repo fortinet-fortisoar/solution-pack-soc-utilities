@@ -4,7 +4,7 @@
     "name": "Clone FortiSOAR Module",
     "aliasName": null,
     "tag": null,
-    "description": "This playbook allows you to clone a FortiSOAR module",
+    "description": "Playbook allows to clone a FortiSOAR module.",
     "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
@@ -24,7 +24,7 @@
                 "input": {
                     "schema": {
                         "title": "Answer the following",
-                        "description": "Choose which module to clone from, and provide the name of the new module",
+                        "description": "<h6>Choose which module to clone from, and provide the name of the new module.<\/h6>",
                         "inputVariables": [
                             {
                                 "name": "oldModule",
@@ -70,6 +70,7 @@
                 "record": "",
                 "agent_id": null,
                 "resources": "alerts",
+                "is_approval": false,
                 "owner_detail": {
                     "isAssigned": false
                 },
@@ -78,7 +79,8 @@
                 "response_mapping": {
                     "options": [
                         {
-                            "option": "Next",
+                            "option": "Clone",
+                            "primary": true,
                             "step_iri": "\/api\/3\/workflow_steps\/8749156a-c0b1-43f4-a8a4-4aea58b6e632"
                         }
                     ],
@@ -93,8 +95,8 @@
                 "unauthenticated_input": false
             },
             "status": null,
-            "top": "300",
-            "left": "300",
+            "top": "398",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/fc04082a-d7dc-4299-96fb-6837b1baa0fe",
             "group": null,
             "uuid": "247d3aa9-514e-4ec3-b4d8-4c108cc8f995"
@@ -108,13 +110,14 @@
                 "input": {
                     "schema": {
                         "title": "Manually review changes or Allow system publish",
-                        "description": "## Option 1\n\n* Click the `Publish` button to commit the changes and auto publish\n\n## Option 2\n\n* Click the `Manual Review` button\n* Go to `System > Modules` and review the changes and manually publish",
+                        "description": "## Option 1\n\n* Click the `Publish` button to commit the changes and auto publish.\n\n## Option 2\n\n* Click the `Manual Review` button.\n* Go to `System > Modules` and review the changes and manually publish.",
                         "inputVariables": []
                     }
                 },
                 "record": "",
                 "agent_id": null,
                 "resources": "alerts",
+                "is_approval": false,
                 "owner_detail": {
                     "isAssigned": false
                 },
@@ -124,6 +127,7 @@
                     "options": [
                         {
                             "option": "Publish",
+                            "primary": true,
                             "step_iri": "\/api\/3\/workflow_steps\/4ad807b6-fc9b-46f7-bb65-f4bf5a627065"
                         },
                         {
@@ -142,8 +146,8 @@
                 "unauthenticated_input": false
             },
             "status": null,
-            "top": "1515",
-            "left": "300",
+            "top": "2153",
+            "left": "433",
             "stepType": "\/api\/3\/workflow_step_types\/fc04082a-d7dc-4299-96fb-6837b1baa0fe",
             "group": null,
             "uuid": "23e3bc17-4993-4a26-b649-8baa5ffccaa3"
@@ -156,8 +160,8 @@
                 "bulk_insert_payload": "{% set api_calls = [] %}{% for field in vars.lookup_fields_needed\n%}{% set json = {\n            \"ownsRelationship\": false,\n            \"visibility\": true,\n            \"writeable\": true,\n            \"gridColumn\": false,\n            \"defaultValue\": None,\n            \"bulkAction\": {\n                \"allow\": false,\n                \"buttonText\": \"\",\n                \"buttonIcon\": \"\",\n                \"buttonClass\": \"btn btn-default btn-sm\"\n            },\n            \"validation\": {\n                \"required\": false,\n                \"minlength\": 0,\n                \"maxlength\": 10485761\n            },\n            \"name\": vars.new_module_metadata.type,\n            \"descriptions\": {\n                \"singular\": vars.new_module_name\n            },\n            \"formType\": \"lookup\",\n            \"type\": vars.new_module_metadata.type,\n            \"orderIndex\": 1,\n            \"dataType\": \"lookup\",\n            \"title\": \"Lookup (One to Many or One to One)\",\n            \"dataSource\": {\n                \"model\": vars.new_module_metadata.type\n            },\n            \"usable\": true,\n            \"searchable\": false,\n            \"lengthConstraint\": false,\n            \"playbookField\": true,\n            \"collection\": false,\n            \"encrypted\": false,\n            \"displayName\": \"{{{{ {} }}}}\".format(vars.new_module_metadata.type),\n            \"sattrib\": \"\/api\/3\/staging_model_metadatas\/{}\".format(field.origin_module_uuid)\n        }%}\n{%- do api_calls.append(json)-%}{%endfor%}{ \"data\": {{api_calls}} }"
             },
             "status": null,
-            "top": "980",
-            "left": "640",
+            "top": "1208",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "98d79dc5-6c13-4cd0-93a5-e3ffb8af51f3"
@@ -175,14 +179,15 @@
                 "version": "3.2.3",
                 "connector": "cyops_utilities",
                 "operation": "make_cyops_request",
+                "ignore_errors": true,
                 "operationTitle": "FSR: Make FortiSOAR API Call",
                 "step_variables": {
                     "new_module_uuid": "{{vars.steps.Create_new_Module.data.uuid}}"
                 }
             },
             "status": null,
-            "top": "975",
-            "left": "300",
+            "top": "1343",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "f95e6070-2556-4a91-be0d-f63e71dc2c96"
@@ -205,8 +210,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "1380",
-            "left": "620",
+            "top": "2018",
+            "left": "433",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "f41a7fd2-4c2e-4162-a63b-51034effcfc6"
@@ -228,8 +233,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "1110",
-            "left": "300",
+            "top": "1613",
+            "left": "433",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "ea611e30-3e04-4de9-b5c2-fca29e0c197e"
@@ -246,8 +251,8 @@
                 "old_module_tablename": "{{vars.steps.Get_modules.data['hydra:member'] | json_query('[?descriptions.plural ==`{}`].tableName'.format(vars.steps.Ask_user_for_module_to_clone_from.input.oldModule)) | first}}"
             },
             "status": null,
-            "top": "435",
-            "left": "300",
+            "top": "533",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "8749156a-c0b1-43f4-a8a4-4aea58b6e632"
@@ -265,8 +270,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "1650",
-            "left": "475",
+            "top": "2288",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "0fad4c5f-a7e2-4b39-9268-950fdbbceb5b"
@@ -291,8 +296,8 @@
                 }
             },
             "status": null,
-            "top": "165",
-            "left": "300",
+            "top": "263",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "3c78494a-8d81-4dd6-977b-6317af20a299"
@@ -316,8 +321,8 @@
                 }
             },
             "status": null,
-            "top": "570",
-            "left": "300",
+            "top": "668",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "9196efc7-3256-4a47-8967-9444cb5546e5"
@@ -332,7 +337,7 @@
                     "body": "{\"module\":\"{{vars.new_module_name}}\"}",
                     "method": "POST"
                 },
-                "version": "3.2.3",
+                "version": "3.2.4",
                 "connector": "cyops_utilities",
                 "operation": "make_cyops_request",
                 "operationTitle": "FSR: Make FortiSOAR API Call",
@@ -341,8 +346,8 @@
                 }
             },
             "status": null,
-            "top": "705",
-            "left": "300",
+            "top": "803",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "82cf4260-9ffc-40d5-9590-79fea33937f9"
@@ -355,8 +360,8 @@
                 "lookup_fields_needed": "{% set missing_lookup_fields = []%}{% set lookup_fields = vars.all_modules | json_query('[?descriptions.plural == `{}`].attributes[] | [?formType == `oneToMany`] '.format(vars.old_module_name)) %}{% for field in lookup_fields%}{% set reverse_module_uuid = vars.all_modules | json_query('[] | [?module == `{}`].uuid'.format(field.type)) | first %}{% do missing_lookup_fields.append({\"origin_module\": field.type, \"origin_module_uuid\":reverse_module_uuid, \"target_module\": vars.new_module_metadata.tableName }) %}{%endfor%}{{missing_lookup_fields }}"
             },
             "status": null,
-            "top": "840",
-            "left": "640",
+            "top": "1073",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "535ee62e-0a36-42d2-a057-fb2c82765fbf"
@@ -378,8 +383,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "1650",
-            "left": "125",
+            "top": "2288",
+            "left": "258",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "4ad807b6-fc9b-46f7-bb65-f4bf5a627065"
@@ -393,8 +398,8 @@
                 "new_module_templates": "{% set templates = vars.steps.Get_Old_Module_View_Templates.data['hydra:member'] %}\n{% for template in templates%}\n{% do template.update({\"uuid\": template.uuid | replace(vars.old_module_tablename, vars.new_module_metadata.type)})%}\n{% do template.pop(\"@id\")%}\n{%endfor%}\n{{(templates | string | replace(\"'resource': '{}'\".format(vars.old_module_tablename), \"'resource': '{}'\".format(vars.new_module_metadata.type)) | replace(\"'module': '{}'\".format(vars.old_module_tablename), \"'module': '{}'\".format(vars.new_module_metadata.type))) | toDict}}"
             },
             "status": null,
-            "top": "840",
-            "left": "300",
+            "top": "938",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "2d67554c-00f5-48a9-b975-da59174e82fc"
@@ -429,8 +434,8 @@
                 "singleRecordExecution": false
             },
             "status": null,
-            "top": "30",
-            "left": "300",
+            "top": "79",
+            "left": "608",
             "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
             "group": null,
             "uuid": "513fd70d-a3b6-41a3-81ae-fdaf005abb0c"
@@ -443,8 +448,8 @@
                 "staging_module_schema": "{%- set staging_schema = vars.old_module_schema | replace(vars.old_module_uuid, vars.new_module_uuid) | toDict -%}\n{%- do staging_schema.update({\"type\": vars.new_module_metadata.type, \"tableName\": vars.new_module_metadata.type, \"module\": vars.new_module_metadata.type, \"descriptions\": {\"singular\": vars.new_module_metadata.singular, \"plural\": vars.new_module_metadata.plural}}) -%}\n{%- do staging_schema.pop('@id') -%}\n\n{%- set uniqueness = ( staging_schema | json_query('uniqueConstraint[].*[]') |first) -%}\n{%- set unique_columns= {(vars.new_module_metadata.type + \"_unique\") : uniqueness} -%}\n{%- do staging_schema.update({ \"uniqueConstraint\": [unique_columns] }) -%}\n\n{%- for attribute in staging_schema['attributes'] -%}\n\t{%- do attribute.pop('inversedField') -%}\n    {%- do attribute.pop('uuid') -%}\n    {%- do attribute.pop('@id') -%}\n    {%- do attribute.update({\"sattrib\": (\"\/api\/3\/staging_model_metadatas\/\" + vars.new_module_uuid )}) -%}\n  \n\t{%- if attribute.formType == \"manyToMany\"-%}\n\t\t{%- do attribute.update({\"dataType\": \"manyToMany\", \"displayTemplate\": \"{{title}}\",  \"isNew\": true, \"mmdUpdate\": true, \"title\": \"Many to Many\",  \"usable\": true }) -%}\n\t{%- elif attribute.formType == \"oneToMany\"-%}\n    \t{%- do attribute.update({\"dataType\": \"oneToMany\",  \"isNew\": true, \"mmdUpdate\": true, \"title\": \"Many to One\",  \"usable\": true, \"bulkAction\": {} }) -%}\n        {%- do staging_schema.update({\"_changed\": true}) -%}\n\t{%- endif -%}\n  \n{%- endfor -%}\n{{staging_schema}}"
             },
             "status": null,
-            "top": "1245",
-            "left": "300",
+            "top": "1748",
+            "left": "433",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "4b151750-12b4-44dd-823d-664ca258e6c0"
@@ -466,11 +471,86 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "1380",
-            "left": "300",
+            "top": "1883",
+            "left": "433",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "c4bf1d6e-e6c2-4add-b277-862ab465d52d"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Is Unique Constraint Violation",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "option": "Yes",
+                        "step_iri": "\/api\/3\/workflow_steps\/8338b6ed-75a7-4884-b360-587330a445ef",
+                        "condition": "{{ 'UniqueConstraintViolationException' in vars.steps.Create_new_Module['Error message'] }}",
+                        "step_name": "Error Message"
+                    },
+                    {
+                        "option": "No",
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/ea611e30-3e04-4de9-b5c2-fca29e0c197e",
+                        "step_name": "Create View Templates"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "1478",
+            "left": "608",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": null,
+            "uuid": "0447a962-5974-452b-96ba-fa62a7fd719d"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Unique Constraint Violation Error Message",
+            "description": null,
+            "arguments": {
+                "type": "InputBased",
+                "input": {
+                    "schema": {
+                        "title": "Error Message",
+                        "description": "<h6><span>Result<\/span>: Module with name <b><i>{{vars.new_module_name}}<\/b><\/i> already exists. <br>\n<span style=\"color:red\">Error:<\/span> {{vars.steps.Create_new_Module['Error message']}}<\/h6>",
+                        "inputVariables": []
+                    }
+                },
+                "record": "",
+                "agent_id": null,
+                "resources": "alerts",
+                "is_approval": false,
+                "owner_detail": {
+                    "isAssigned": false
+                },
+                "isRecordLinked": false,
+                "step_variables": [],
+                "response_mapping": {
+                    "options": [
+                        {
+                            "option": "Ok",
+                            "primary": true
+                        }
+                    ],
+                    "duplicateOption": false,
+                    "customSuccessMessage": "Awaiting Playbook resumed successfully."
+                },
+                "email_notification": {
+                    "enabled": false,
+                    "smtpParameters": []
+                },
+                "inline_channel_list": [],
+                "external_channel_list": [],
+                "unauthenticated_input": false
+            },
+            "status": null,
+            "top": "1613",
+            "left": "783",
+            "stepType": "\/api\/3\/workflow_step_types\/fc04082a-d7dc-4299-96fb-6837b1baa0fe",
+            "group": null,
+            "uuid": "8338b6ed-75a7-4884-b360-587330a445ef"
         }
     ],
     "routes": [
@@ -479,7 +559,7 @@
             "name": "Ask user for module to clone from -> Determine Module IDs",
             "targetStep": "\/api\/3\/workflow_steps\/8749156a-c0b1-43f4-a8a4-4aea58b6e632",
             "sourceStep": "\/api\/3\/workflow_steps\/247d3aa9-514e-4ec3-b4d8-4c108cc8f995",
-            "label": "Next",
+            "label": "Clone",
             "isExecuted": false,
             "group": null,
             "uuid": "c84cf663-8d2c-4708-9d3a-ec054429eaaf"
@@ -506,6 +586,16 @@
         },
         {
             "@type": "WorkflowRoute",
+            "name": "Check Unique Constraint Violation -> Create View Templates",
+            "targetStep": "\/api\/3\/workflow_steps\/ea611e30-3e04-4de9-b5c2-fca29e0c197e",
+            "sourceStep": "\/api\/3\/workflow_steps\/0447a962-5974-452b-96ba-fa62a7fd719d",
+            "label": "No",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "b4c358d0-42fc-4196-ba1a-eb5b2837bd59"
+        },
+        {
+            "@type": "WorkflowRoute",
             "name": "Copy of Create new Module -> Update module schema",
             "targetStep": "\/api\/3\/workflow_steps\/4b151750-12b4-44dd-823d-664ca258e6c0",
             "sourceStep": "\/api\/3\/workflow_steps\/ea611e30-3e04-4de9-b5c2-fca29e0c197e",
@@ -526,13 +616,13 @@
         },
         {
             "@type": "WorkflowRoute",
-            "name": "Create new Module -> Copy of Create new Module",
-            "targetStep": "\/api\/3\/workflow_steps\/ea611e30-3e04-4de9-b5c2-fca29e0c197e",
+            "name": "Create new Module -> Check Unique Constraint Violation",
+            "targetStep": "\/api\/3\/workflow_steps\/0447a962-5974-452b-96ba-fa62a7fd719d",
             "sourceStep": "\/api\/3\/workflow_steps\/f95e6070-2556-4a91-be0d-f63e71dc2c96",
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "fda4fd9f-a823-451b-9be5-4849b52bff88"
+            "uuid": "7f52c935-0c35-4042-a2af-5ec66fd0a9b3"
         },
         {
             "@type": "WorkflowRoute",
@@ -596,6 +686,16 @@
         },
         {
             "@type": "WorkflowRoute",
+            "name": "Is Unique Constraint Violation -> Error Message",
+            "targetStep": "\/api\/3\/workflow_steps\/8338b6ed-75a7-4884-b360-587330a445ef",
+            "sourceStep": "\/api\/3\/workflow_steps\/0447a962-5974-452b-96ba-fa62a7fd719d",
+            "label": "Yes",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "c782c247-d874-43f8-a4a6-f98df243f88c"
+        },
+        {
+            "@type": "WorkflowRoute",
             "name": "Set New Module Schema -> Identify Lookup fields",
             "targetStep": "\/api\/3\/workflow_steps\/535ee62e-0a36-42d2-a057-fb2c82765fbf",
             "sourceStep": "\/api\/3\/workflow_steps\/2d67554c-00f5-48a9-b975-da59174e82fc",
@@ -646,8 +746,8 @@
             "hideInLogs": false,
             "metadata": [],
             "reusable": false,
-            "top": "40",
-            "left": "620",
+            "top": "79",
+            "left": "192",
             "height": "158",
             "width": "383",
             "uuid": "450e6650-62f9-4079-a2a0-b27884323f43",
@@ -659,5 +759,7 @@
     "owners": [],
     "isPrivate": false,
     "deletedAt": null,
-    "recordTags": []
+    "recordTags": [
+        "ManualTrigger"
+    ]
 }
