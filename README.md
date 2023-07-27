@@ -7,7 +7,7 @@
 
 # Overview
 
-Introducing the **SOC Utilities** Solution Pack
+**SOC Utilities** Solution Pack is designed around utilities to aid in the use of FortiSOAR.
 
 # Next Steps
 
