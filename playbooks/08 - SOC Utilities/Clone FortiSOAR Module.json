@@ -79,7 +79,7 @@
                 "response_mapping": {
                     "options": [
                         {
-                            "option": "Clone",
+                            "option": "Next",
                             "primary": true,
                             "step_iri": "\/api\/3\/workflow_steps\/8749156a-c0b1-43f4-a8a4-4aea58b6e632"
                         }
@@ -176,7 +176,7 @@
                     "body": "{{vars.new_module_schema}}",
                     "method": "POST"
                 },
-                "version": "3.2.3",
+                "version": "3.2.4",
                 "connector": "cyops_utilities",
                 "operation": "make_cyops_request",
                 "ignore_errors": true,
@@ -514,7 +514,7 @@
                 "input": {
                     "schema": {
                         "title": "Error Message",
-                        "description": "<h6><span>Result<\/span>: Module with name <b><i>{{vars.new_module_name}}<\/b><\/i> already exists. <br>\n<span style=\"color:red\">Error:<\/span> {{vars.steps.Create_new_Module['Error message']}}<\/h6>",
+                        "description": "<b><span style=\"color:red\">Error:<\/span><\/b> Module with name <b><i>{{vars.new_module_name}}<\/b><\/i> already exists. <br><b><span>Details:<\/span><\/b> {{vars.steps.Create_new_Module['Error message']}}",
                         "inputVariables": []
                     }
                 },
@@ -530,7 +530,7 @@
                 "response_mapping": {
                     "options": [
                         {
-                            "option": "Ok",
+                            "option": "Close",
                             "primary": true
                         }
                     ],
@@ -559,7 +559,7 @@
             "name": "Ask user for module to clone from -> Determine Module IDs",
             "targetStep": "\/api\/3\/workflow_steps\/8749156a-c0b1-43f4-a8a4-4aea58b6e632",
             "sourceStep": "\/api\/3\/workflow_steps\/247d3aa9-514e-4ec3-b4d8-4c108cc8f995",
-            "label": "Clone",
+            "label": "Next",
             "isExecuted": false,
             "group": null,
             "uuid": "c84cf663-8d2c-4708-9d3a-ec054429eaaf"

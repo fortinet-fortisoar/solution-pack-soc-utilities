@@ -25,7 +25,7 @@ This playbook gives you the ability to clone a FortiSOAR module. Currently there
 
 ![Module Questions](./res/module_input_questions.png)
 
-6. Click the **Clone** button
+6. Click the **Next** button
 > **Note:** If Module with same name already exists. A popup with error message appears.
 ![Error Message](./res/error_message.png)
 
