@@ -14,5 +14,5 @@ The **SOC Utilities** solution pack contains the following resources:
 |:-----------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
 | Clone FortiSOAR Module                                       | Playbook allows to clone a FortiSOAR module. |
 
-| [Installation](./docs/setup.md#installation) | [Configuration](./docs/setup.md#configuration) | [Usage](./docs/usage.md) |
+| [Installation](./setup.md#installation) | [Configuration](./setup.md#configuration) | [Usage](./usage.md) |
 |----------------------------------------------|------------------------------------------------|--------------------------|
