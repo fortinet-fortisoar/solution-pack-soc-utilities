@@ -43,14 +43,17 @@ This playbook gives you the ability to clone a FortiSOAR module. Currently there
 ## Module Permission
 
 1.  Navigate to System Settings by clicking the Gear icon at the top right
+
 ![Publish Message](./res/system_settings.png)
 
 2.   Click the **Roles** section from the left navigation pane.
+
 ![Roles](./res/roles.png)
 
 3.   Click the **Full App Permissions** Role, or whichever role you want to assign the permissions for the new module
 
 4.   Scroll until you find the new module name (Security Alerts in this example), and check all of the permission boxes as necessary.
+
 ![Module Permissions Message](./res/module_permissions.png)
 
 5.   Click **Save** at the bottom left
@@ -60,14 +63,17 @@ This playbook gives you the ability to clone a FortiSOAR module. Currently there
 > **Caution:** If you need playbooks to create records in this module, make sure the playbook appliance has the CRUD permissions necessary to access the module
 
 6.   Navigate to the Navigation section of the settings
+
 ![Navigiation](./res/navigation.png)
 
 7.  Find the new module in the Modules box and check the box.
+
 ![Alt text](./res/modules_box.png)
 
 8. Click **Add to Menu**
 
 9. Scroll to the very bottom of the page. You can then optionally change the icon of the module using the pencil icon to the right of the row.
+
 ![Module Row](./res/module_row.png)
 
 10.  (Optional) Drag the row to where you want to the module displayed.
