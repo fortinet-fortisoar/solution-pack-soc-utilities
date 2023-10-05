@@ -1,0 +1,254 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Get Pending Manual Input",
+    "aliasName": null,
+    "tag": null,
+    "description": "Gets all manual input records pending for user action/inputs and create CSV attachments for associated alerts.",
+    "isActive": true,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/503555f4-07bd-4d56-b732-63defb0d3e76",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/549086be-f9f3-4111-924b-e16668065743",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Combine Alerts all Data Set",
+            "description": null,
+            "arguments": {
+                "_temp": "{% for record in vars.steps.Get_Alert_Data_Set %}\n {{vars.dataSet.append(record.data)}}\n{%endfor%}"
+            },
+            "status": null,
+            "top": "570",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "b113dd49-a4a8-416a-9436-f329833c7002"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Configurations",
+            "description": null,
+            "arguments": {
+                "limit": "100",
+                "offset": "0"
+            },
+            "status": null,
+            "top": "165",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "d6286f73-80f5-4623-a6fd-88e3111da449"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create CSV Attachment",
+            "description": null,
+            "arguments": {
+                "name": "CSV Data Management",
+                "params": {
+                    "meta": "",
+                    "input": "JSON",
+                    "json_data": "{{vars.dataSet}}",
+                    "csvFileName": "Manual-Input-Details",
+                    "record_path": ""
+                },
+                "version": "1.2.0",
+                "connector": "csv-data-management",
+                "operation": "convert_json_to_csv_file",
+                "operationTitle": "Convert JSON to CSV File",
+                "pickFromTenant": false,
+                "step_variables": []
+            },
+            "status": null,
+            "top": "705",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/0bfed618-0316-11e7-93ae-92361f002671",
+            "group": null,
+            "uuid": "62d29b1a-b1b2-4b41-a178-864b30c86612"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Alert Data Set",
+            "description": null,
+            "arguments": {
+                "for_each": {
+                    "item": "{{vars.steps.Get_Pending_Manual_Inputs.data['hydra:member']}}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "arguments": {
+                    "mi_details": "{{vars.item}}"
+                },
+                "apply_async": false,
+                "step_variables": [],
+                "pass_parent_env": false,
+                "pass_input_record": false,
+                "workflowReference": "\/api\/3\/workflows\/90d43540-d584-4662-9fd8-c92df5f1e7b4"
+            },
+            "status": null,
+            "top": "435",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/74932bdc-b8b6-4d24-88c4-1a4dfbc524f3",
+            "group": null,
+            "uuid": "89f2f5ad-afc6-4887-9625-71e12ec6aa71"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Pending Manual Inputs",
+            "description": null,
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/wf\/api\/manual-wf-input\/list_wfinput\/?format=json&limit={{vars.limit}}&offset={{vars.offset}}&ordering=-id&unauthenticated_input=false",
+                    "body": "{\"assigned_to\":\"all\",\"is_approval\":false}",
+                    "method": "POST"
+                },
+                "version": "3.2.5",
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": {
+                    "dataSet": "[]"
+                }
+            },
+            "status": null,
+            "top": "300",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "754efd62-1986-457d-96ac-50344e60a66e"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "route": "f8891ad9-6efb-4f45-9a64-e8a1c01a7984",
+                "resources": [
+                    "alerts"
+                ],
+                "__triggerLimit": true,
+                "inputVariables": [
+                    {
+                        "name": "limit",
+                        "type": "string",
+                        "label": "Limit",
+                        "tooltip": "specify the limit of the manual input to retrieve.",
+                        "dataType": "text",
+                        "formType": "text",
+                        "required": false,
+                        "_expanded": true,
+                        "defaultValue": "100",
+                        "_previousName": "",
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    },
+                    {
+                        "name": "offset",
+                        "type": "string",
+                        "label": "Offset",
+                        "tooltip": "Specify the offset from the manual input to retrieve.",
+                        "dataType": "text",
+                        "formType": "text",
+                        "required": false,
+                        "_expanded": true,
+                        "defaultValue": "0",
+                        "_previousName": "",
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    }
+                ],
+                "step_variables": {
+                    "input": {
+                        "params": {
+                            "limit": "{{vars.request.data[\"limit\"]}}",
+                            "offset": "{{vars.request.data[\"offset\"]}}"
+                        },
+                        "records": "{{vars.input.records}}"
+                    }
+                },
+                "_promptexpanded": true,
+                "triggerOnSource": true,
+                "executeButtonText": "Execute",
+                "noRecordExecution": true,
+                "showToasterMessage": {
+                    "visible": false,
+                    "messageVisible": true
+                },
+                "triggerOnReplicate": false,
+                "singleRecordExecution": false
+            },
+            "status": null,
+            "top": "30",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
+            "group": null,
+            "uuid": "549086be-f9f3-4111-924b-e16668065743"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "Call -> CombineAll",
+            "targetStep": "\/api\/3\/workflow_steps\/b113dd49-a4a8-416a-9436-f329833c7002",
+            "sourceStep": "\/api\/3\/workflow_steps\/89f2f5ad-afc6-4887-9625-71e12ec6aa71",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "1d5beaaf-9c8e-49c3-9ce0-e3221e65c76e"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "CombineAll -> Create CSV",
+            "targetStep": "\/api\/3\/workflow_steps\/62d29b1a-b1b2-4b41-a178-864b30c86612",
+            "sourceStep": "\/api\/3\/workflow_steps\/b113dd49-a4a8-416a-9436-f329833c7002",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "78d58df0-5457-4c34-9ea0-77eb8e6b7d18"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configurations -> Get Pending Manual Inputs",
+            "targetStep": "\/api\/3\/workflow_steps\/754efd62-1986-457d-96ac-50344e60a66e",
+            "sourceStep": "\/api\/3\/workflow_steps\/d6286f73-80f5-4623-a6fd-88e3111da449",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "f0de2ca2-d162-4e8d-b285-af96c4ea27eb"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get MI -> Call",
+            "targetStep": "\/api\/3\/workflow_steps\/89f2f5ad-afc6-4887-9625-71e12ec6aa71",
+            "sourceStep": "\/api\/3\/workflow_steps\/754efd62-1986-457d-96ac-50344e60a66e",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "b7b8e5a8-45d2-4692-a21d-03cb467cdd7a"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Configurations",
+            "targetStep": "\/api\/3\/workflow_steps\/d6286f73-80f5-4623-a6fd-88e3111da449",
+            "sourceStep": "\/api\/3\/workflow_steps\/549086be-f9f3-4111-924b-e16668065743",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "fb420c52-4981-476f-893e-25795006933e"
+        }
+    ],
+    "groups": [],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "27a002ed-334c-417e-8c50-ab952ded6c7d",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "ManualTrigger"
+    ]
+}

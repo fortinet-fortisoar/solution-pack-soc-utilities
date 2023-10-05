@@ -1,0 +1,1013 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Terminate Awaiting Data Ingestion playbooks",
+    "aliasName": null,
+    "tag": null,
+    "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state from last x minutes.",
+    "isActive": true,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/503555f4-07bd-4d56-b732-63defb0d3e76",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/a537bd79-9305-4c1c-a92d-c8d1e5fe65be",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Configurations",
+            "description": null,
+            "arguments": {
+                "user": "{{vars.input.params.user['@id']}}",
+                "limit": "{{vars.input.params.limit if vars.input.params.limit else 100}}",
+                "offset": "{{vars.input.params.offset if vars.input.params.offset else 0}}",
+                "status": "{{vars.input.params.status}}",
+                "last_x_minute": "{{vars.input.params.lastXMinutes}}"
+            },
+            "status": null,
+            "top": "160",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Convert last X minute Datetime",
+            "description": null,
+            "arguments": {
+                "current_time": "{{arrow.utcnow().format(\"YYYY-MM-DD+HH:mm:ss\")}}",
+                "last_x_minute_time": "{{arrow.utcnow().shift(minutes=-vars.last_x_minute).format(\"YYYY-MM-DD+HH:mm:ss\")}}"
+            },
+            "status": null,
+            "top": "300",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "a0f27e71-da89-4f3a-bad8-8d5628633cf8"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create Data Set",
+            "description": null,
+            "arguments": {
+                "awaiting_paybooks": "{{vars.steps.Get_Awaiting_Playbooks_of_Manual_Input.data['hydra:member'] | json_query('[].{WFID: \"@id\",Name : name,Status : status,Awaiting_since: modified }')}}"
+            },
+            "status": null,
+            "top": "560",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "ce74c0c3-937e-454a-9b2e-2487d5dce8a6"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Awaiting Playbooks of Manual Input",
+            "description": null,
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/wf\/api\/workflows\/log_list\/?format=json&limit={{vars.limit}}&modified_before={{vars.last_x_minute_time}}&offset={{vars.offset}}&ordering=-modified&page=1&parent__isnull=True&tags_exclude=system&status={{vars.status}}&tags_include=dataingestion",
+                    "body": "{}",
+                    "method": "POST"
+                },
+                "version": "3.2.5",
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "440",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "6525d7a2-bacd-434c-9497-e364d055e2c0"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Send Notification",
+            "description": null,
+            "arguments": {
+                "when": "{{vars.awaiting_paybooks}}",
+                "config": "14ca52f1-89b2-450f-be79-7201ac56d058",
+                "params": {
+                    "cc": "",
+                    "to": "rktest.2204@outlook.com",
+                    "bcc": "",
+                    "from": "",
+                    "type": "Manual Input",
+                    "content": "<p>&nbsp; Following are details for data ingestion playbooks which are stuck in <span class=\"badge badge-pill badge-danger\" style=\"background: #F5A623; color: #fff;\">Awaiting State<\/span><\/p>\n<p>&nbsp;<\/p>\n<p>{% for item in vars.awaiting_paybooks %}<\/p>\n<ul style=\"list-style-type: square;\">\n<li><strong>Name <\/strong> - {{ item.Name | title }} ;<strong> Current Status<\/strong> - {{item.Status | title }} ;&nbsp; <strong>Awaiting Since<\/strong>&nbsp;- {{item.Awaiting_since.replace(\"T\",\" \").split('.')[0]}}<\/li>\n<\/ul>\n<p>{% endfor %}<\/p>",
+                    "subject": "Data Ingestion Playbooks In Awaiting State",
+                    "iri_list": "",
+                    "body_type": "Rich Text",
+                    "file_name": "",
+                    "file_path": ""
+                },
+                "version": "2.5.0",
+                "from_str": "admin@example.com",
+                "connector": "smtp",
+                "operation": "send_email_new",
+                "operationTitle": "Send Email (Advanced)",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "820",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/4c0019b2-055c-44d0-968c-678a0c2d762e",
+            "group": null,
+            "uuid": "65ff0e1c-ae72-4bb3-9cf0-7ae1a45d5c80"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "route": "55dbe4c4-313e-44c3-9c03-2bd8ad78334d",
+                "resources": [
+                    "alerts"
+                ],
+                "__triggerLimit": true,
+                "inputVariables": [
+                    {
+                        "name": "lastXMinutes",
+                        "type": "integer",
+                        "label": "Last X Minutes",
+                        "title": "Integer Field",
+                        "usable": true,
+                        "tooltip": "Specify a timestamp of the last x minutes, terminating all awaiting data ingestion playbooks before that timestamp.",
+                        "dataType": "integer",
+                        "formType": "integer",
+                        "required": true,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "searchable": true,
+                        "templateUrl": "app\/components\/form\/fields\/integer.html",
+                        "defaultValue": 30,
+                        "_previousName": "lastXMinute",
+                        "playbookField": true,
+                        "lengthConstraint": true,
+                        "allowedEncryption": false,
+                        "allowedGridColumn": true,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    },
+                    {
+                        "name": "status",
+                        "type": "array",
+                        "label": "Status",
+                        "title": "Dynamic List",
+                        "usable": true,
+                        "options": [
+                            "awaiting",
+                            "incipient",
+                            "active"
+                        ],
+                        "tooltip": "Select the state of the data ingestion playbook that you want to terminate",
+                        "dataType": "dynamicList",
+                        "formType": "dynamicList",
+                        "required": true,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "searchable": false,
+                        "templateUrl": "app\/components\/form\/fields\/dynamicList.html",
+                        "defaultValue": null,
+                        "_previousName": "status",
+                        "playbookField": true,
+                        "lengthConstraint": true,
+                        "allowedGridColumn": false,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    },
+                    {
+                        "name": "user",
+                        "type": "people",
+                        "label": "User",
+                        "title": "Lookup (One to Many or One to One)",
+                        "usable": true,
+                        "tooltip": "Select the user of the data ingestion playbook that you want to terminate",
+                        "dataType": "lookup",
+                        "formType": "lookup",
+                        "required": true,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "dataSource": {
+                            "model": "people",
+                            "displayConditions": []
+                        },
+                        "searchable": false,
+                        "templateUrl": "app\/components\/form\/fields\/typeahead.html",
+                        "defaultValue": {
+                            "id": 3,
+                            "@id": "\/api\/3\/people\/3451141c-bac6-467c-8d72-85e0fab569ce",
+                            "type": null,
+                            "uuid": "3451141c-bac6-467c-8d72-85e0fab569ce",
+                            "@type": "Person",
+                            "email": "admin@example.com",
+                            "roles": [
+                                "\/api\/3\/roles\/17562d60-b841-4ed7-912b-1ebaf063c8c9",
+                                "\/api\/3\/roles\/21d7a7c6-9d68-438f-b732-e8950c5f745b",
+                                "\/api\/3\/roles\/c5ff8174-b3fa-41c5-b781-2b890b426a80"
+                            ],
+                            "tasks": [],
+                            "teams": [
+                                "\/api\/3\/teams\/6e569c09-3bd4-40f1-98b0-cc994464c3c5"
+                            ],
+                            "title": "Admin",
+                            "alerts": [],
+                            "avatar": null,
+                            "shifts": [],
+                            "userId": "15797f3e-1f6d-4653-b8ef-e4670d6f3852",
+                            "display": "CS Admin",
+                            "@context": "\/api\/3\/contexts\/Person",
+                            "comments": [],
+                            "csActive": true,
+                            "lastname": "Admin",
+                            "phoneFax": null,
+                            "userType": null,
+                            "@settings": {
+                                "user": {
+                                    "view": {
+                                        "theme": "steel",
+                                        "details": {
+                                            "alerts": {
+                                                "subtabs": {
+                                                    "Indicators": "indicators"
+                                                }
+                                            },
+                                            "attachments": {
+                                                "subtabs": {
+                                                    "Correlations": "alerts"
+                                                }
+                                            },
+                                            "onboarding-guide": {
+                                                "onboardingSetupLater": true
+                                            },
+                                            "change_management": {
+                                                "selectedTab": "Configuration"
+                                            }
+                                        }
+                                    },
+                                    "phone": {
+                                        "countryId": "US"
+                                    },
+                                    "global": {
+                                        "timezone": {
+                                            "timezone_type": 3
+                                        }
+                                    },
+                                    "notifications": {
+                                        "sms": false,
+                                        "web": false,
+                                        "email": true,
+                                        "commentMentionEmailNotifications": true
+                                    }
+                                },
+                                "playbook": {
+                                    "logs": {
+                                        "tags": [
+                                            {
+                                                "uuid": "system"
+                                            }
+                                        ],
+                                        "filterOpration": "exclude"
+                                    },
+                                    "autosave": true,
+                                    "autosaveTime": 15,
+                                    "enableJinjaToTag": true
+                                },
+                                "navigation": {
+                                    "collapsed": true
+                                },
+                                "globalFilters": {
+                                    "people": {
+                                        "showActiveUsers": true
+                                    }
+                                },
+                                "recommendation": {
+                                    "strategy": "falconBased"
+                                },
+                                "auditlog_ttl_config": {
+                                    "ttl": 0,
+                                    "enabled": false
+                                },
+                                "commentModification": {
+                                    "enabled": true,
+                                    "softDelete": true,
+                                    "timeWindow": 300
+                                },
+                                "workflow_log_config": {
+                                    "debug": false,
+                                    "failed_workflow": true,
+                                    "allow_pb_to_override": true
+                                },
+                                "workflow_ttl_config": {
+                                    "ttl": 15,
+                                    "enabled": true
+                                },
+                                "workflow_vacuum_config": {
+                                    "ttl": "7",
+                                    "enabled": true
+                                }
+                            },
+                            "companyId": null,
+                            "firstname": "CS",
+                            "fsrQueues": [
+                                "\/api\/3\/fsr_queues\/4cf6073b-319d-4c30-887c-f642adfede82"
+                            ],
+                            "incidents": [],
+                            "phoneHome": null,
+                            "phoneWork": "+16462759691",
+                            "trackable": true,
+                            "accessType": "Named",
+                            "createDate": 1694175507.947227,
+                            "createUser": "\/api\/3\/people\/3451141c-bac6-467c-8d72-85e0fab569ce",
+                            "department": null,
+                            "indicators": [],
+                            "modifyDate": 1695886200.034563,
+                            "modifyUser": "\/api\/3\/appliances\/57545210-2adc-472b-a24f-2df6ee8dfe63",
+                            "attachments": [],
+                            "defaultSort": false,
+                            "description": null,
+                            "displayName": "CS Admin",
+                            "gitUsername": "cs-test",
+                            "phoneMobile": null,
+                            "@permissions": {
+                                "hunt": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "keys": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "files": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "roles": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "rules": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "tasks": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "teams": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "actors": {
+                                    "read": true,
+                                    "clone": false,
+                                    "create": false,
+                                    "delete": false,
+                                    "update": false,
+                                    "execute": false
+                                },
+                                "agents": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "alerts": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "assets": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "events": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "people": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "shifts": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "queries": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "routers": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "tenants": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "widgets": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "comments": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "security": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "settings": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "warrooms": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "approvals": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "campaigns": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "companies": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "dashboard": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "incidents": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "picklists": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "reporting": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "schedules": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "workflows": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "activities": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": false,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "appliances": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "connectors": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "contentHub": {
+                                    "read": true,
+                                    "clone": false,
+                                    "create": false,
+                                    "delete": false,
+                                    "fields": [],
+                                    "update": false,
+                                    "execute": false
+                                },
+                                "fsr_queues": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "indicators": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "application": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "attachments": {
+                                    "read": true,
+                                    "clone": false,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "export_jobs": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "import_jobs": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "sla_template": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "announcements": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "communication": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "data_archival": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "saved_reports": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "solutionpacks": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "email_templates": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "leave_schedules": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "rule_collections": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": false
+                                },
+                                "change_management": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": false,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                },
+                                "workflow_collections": {
+                                    "read": true,
+                                    "clone": true,
+                                    "create": true,
+                                    "delete": true,
+                                    "fields": [],
+                                    "update": true,
+                                    "execute": true
+                                }
+                            },
+                            "_currentUser": true,
+                            "_highlighted": true,
+                            "descriptions": {
+                                "plural": "People",
+                                "singular": "Person"
+                            },
+                            "displayTemplate": "{{ firstname }} {{ lastname }}"
+                        },
+                        "_previousName": "",
+                        "playbookField": true,
+                        "displayTemplate": "%7B%7B%20firstname%20%7D%7D%20%7B%7B%20lastname%20%7D%7D",
+                        "lengthConstraint": false,
+                        "allowedEncryption": false,
+                        "allowedGridColumn": true,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    },
+                    {
+                        "name": "limit",
+                        "type": "integer",
+                        "label": "Limit",
+                        "title": "Integer Field",
+                        "usable": true,
+                        "tooltip": "specify the limit of the data ingestion playbook that you want to terminate",
+                        "dataType": "integer",
+                        "formType": "integer",
+                        "required": false,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "searchable": true,
+                        "templateUrl": "app\/components\/form\/fields\/integer.html",
+                        "defaultValue": null,
+                        "_previousName": "",
+                        "playbookField": true,
+                        "lengthConstraint": true,
+                        "allowedEncryption": false,
+                        "allowedGridColumn": true,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    },
+                    {
+                        "name": "offset",
+                        "type": "integer",
+                        "label": "Offset",
+                        "title": "Integer Field",
+                        "usable": true,
+                        "tooltip": "Specify the offset of the data ingestion playbook that you want to terminate",
+                        "dataType": "integer",
+                        "formType": "integer",
+                        "required": false,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "searchable": true,
+                        "templateUrl": "app\/components\/form\/fields\/integer.html",
+                        "defaultValue": null,
+                        "_previousName": "off",
+                        "playbookField": true,
+                        "lengthConstraint": true,
+                        "allowedEncryption": false,
+                        "allowedGridColumn": true,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    }
+                ],
+                "step_variables": {
+                    "input": {
+                        "params": {
+                            "user": "{{vars.request.data[\"user\"]}}",
+                            "limit": "{{vars.request.data[\"limit\"]}}",
+                            "offset": "{{vars.request.data[\"offset\"]}}",
+                            "status": "{{vars.request.data[\"status\"]}}",
+                            "lastXMinutes": "{{vars.request.data[\"lastXMinutes\"]}}"
+                        },
+                        "records": "{{vars.input.records}}"
+                    }
+                },
+                "_promptexpanded": true,
+                "triggerOnSource": true,
+                "executeButtonText": "Submit",
+                "noRecordExecution": true,
+                "showToasterMessage": {
+                    "visible": false,
+                    "messageVisible": true
+                },
+                "triggerOnReplicate": false,
+                "singleRecordExecution": false
+            },
+            "status": null,
+            "top": "20",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
+            "group": null,
+            "uuid": "a537bd79-9305-4c1c-a92d-c8d1e5fe65be"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Terminate Playbooks",
+            "description": null,
+            "arguments": {
+                "when": "{{vars.awaiting_paybooks}}",
+                "params": {
+                    "iri": "\/api\/wf\/workflow\/revoke\/tasks\/?format=json",
+                    "body": "{\"wfLogId\":{{vars.item.WFID.split(\"\/\")[-2]}},\"user\":\"{{vars.user}}\"}",
+                    "method": "POST"
+                },
+                "version": "3.2.5",
+                "for_each": {
+                    "item": "{{vars.awaiting_paybooks}}",
+                    "parallel": false,
+                    "condition": ""
+                },
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "700",
+            "left": "880",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "e212ab38-c8dc-4638-b04c-c3787ef50fff"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "API CALL -> Awaiting Playbook List",
+            "targetStep": "\/api\/3\/workflow_steps\/ce74c0c3-937e-454a-9b2e-2487d5dce8a6",
+            "sourceStep": "\/api\/3\/workflow_steps\/6525d7a2-bacd-434c-9497-e364d055e2c0",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "fc5666f9-d321-48ec-80b9-2295adebecaf"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configuration -> API CALL",
+            "targetStep": "\/api\/3\/workflow_steps\/6525d7a2-bacd-434c-9497-e364d055e2c0",
+            "sourceStep": "\/api\/3\/workflow_steps\/a0f27e71-da89-4f3a-bad8-8d5628633cf8",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9623c7e7-fd9c-413c-94d4-52914055e20d"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configurations1 -> Configuration",
+            "targetStep": "\/api\/3\/workflow_steps\/a0f27e71-da89-4f3a-bad8-8d5628633cf8",
+            "sourceStep": "\/api\/3\/workflow_steps\/67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "d9439694-75f1-4145-a980-08a4647c33d3"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Create Data Set -> Terminate Playbooks",
+            "targetStep": "\/api\/3\/workflow_steps\/e212ab38-c8dc-4638-b04c-c3787ef50fff",
+            "sourceStep": "\/api\/3\/workflow_steps\/ce74c0c3-937e-454a-9b2e-2487d5dce8a6",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "fb7fb6ba-4e4c-43d8-90aa-b14a490a22b7"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Configurations",
+            "targetStep": "\/api\/3\/workflow_steps\/67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad",
+            "sourceStep": "\/api\/3\/workflow_steps\/a537bd79-9305-4c1c-a92d-c8d1e5fe65be",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "44a4b3f4-4412-423e-b66e-e0b1aea4f0d8"
+        }
+    ],
+    "groups": [
+        {
+            "@type": "WorkflowGroup",
+            "name": "Send Notification",
+            "description": "If you want to send notification to specified email address then user needs to connect \"Send Notification\" step before the \"Terminate Playbooks\" step.",
+            "type": "note",
+            "isCollapsed": false,
+            "hasTriggerStep": false,
+            "hideInLogs": true,
+            "metadata": [],
+            "reusable": false,
+            "top": "30",
+            "left": "150",
+            "height": "0",
+            "width": "300",
+            "uuid": "e67dd9b1-4d77-40f2-a40c-8131bc8d8b1d",
+            "recordTags": []
+        }
+    ],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "286a9290-2abe-4767-ab43-9122ece60933",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "ManualTrigger"
+    ]
+}
