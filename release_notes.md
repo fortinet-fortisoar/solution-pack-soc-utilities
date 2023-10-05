@@ -8,7 +8,7 @@
 
 
 ## Playbook Enhancements
-- Added new playbooks to **08 - SOC Utilities** playbook collection. For more details, 
+- Added new playbooks to **08 - SOC Utilities** playbook collection.
     - **Get Pending Manual Input**
     - **Delete Pending Manual Input**
     - **Terminate Awaiting Data Ingestion playbooks**
