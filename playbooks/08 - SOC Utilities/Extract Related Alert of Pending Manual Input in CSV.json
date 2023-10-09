@@ -1,10 +1,10 @@
 {
     "@type": "Workflow",
     "triggerLimit": null,
-    "name": "Get Pending Manual Input",
+    "name": "Extract Related Alert of Pending Manual Input in CSV",
     "aliasName": null,
     "tag": null,
-    "description": "Gets all manual input records pending for user action/inputs and create CSV attachments for associated alerts.",
+    "description": "Retrieve all pending manual input records for user action\/input and generates CSV attachments for related and missing alerts.",
     "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
@@ -18,9 +18,9 @@
         {
             "@type": "WorkflowStep",
             "name": "Combine Alerts all Data Set",
-            "description": null,
+            "description": "combine a dataset of existing or missing alerts associated with manual input.",
             "arguments": {
-                "_temp": "{% for record in vars.steps.Get_Alert_Data_Set %}\n {{vars.dataSet.append(record.data)}}\n{%endfor%}"
+                "_temp": "{% for record in vars.steps.Create_DataSet %}\n {{vars.dataSet.append(record.data)}}\n{%endfor%}"
             },
             "status": null,
             "top": "570",
@@ -32,7 +32,7 @@
         {
             "@type": "WorkflowStep",
             "name": "Configurations",
-            "description": null,
+            "description": "Limit: Limit for maximum awaiting manual input to fetch.\noffset: Starting index of the awaiting manual input to fetch, default is 0",
             "arguments": {
                 "limit": "100",
                 "offset": "0"
@@ -47,7 +47,7 @@
         {
             "@type": "WorkflowStep",
             "name": "Create CSV Attachment",
-            "description": null,
+            "description": "Create Zip file of a dataset of existing or missing alerts associated with manual input.",
             "arguments": {
                 "name": "CSV Data Management",
                 "params": {
@@ -73,11 +73,11 @@
         },
         {
             "@type": "WorkflowStep",
-            "name": "Get Alert Data Set",
-            "description": null,
+            "name": "Create DataSet",
+            "description": "Creates a dataset of existing or missing alerts associated with manual input.",
             "arguments": {
                 "for_each": {
-                    "item": "{{vars.steps.Get_Pending_Manual_Inputs.data['hydra:member']}}",
+                    "item": "{{vars.steps.Fetch_Pending_Manual_Inputs.data['hydra:member']}}",
                     "parallel": false,
                     "condition": ""
                 },
@@ -99,8 +99,8 @@
         },
         {
             "@type": "WorkflowStep",
-            "name": "Get Pending Manual Inputs",
-            "description": null,
+            "name": "Fetch Pending Manual Inputs",
+            "description": "Retrieves a list of manual input awaiting users action.",
             "arguments": {
                 "params": {
                     "iri": "\/api\/wf\/api\/manual-wf-input\/list_wfinput\/?format=json&limit={{vars.limit}}&offset={{vars.offset}}&ordering=-id&unauthenticated_input=false",
@@ -132,42 +132,10 @@
                     "alerts"
                 ],
                 "__triggerLimit": true,
-                "inputVariables": [
-                    {
-                        "name": "limit",
-                        "type": "string",
-                        "label": "Limit",
-                        "tooltip": "specify the limit of the manual input to retrieve.",
-                        "dataType": "text",
-                        "formType": "text",
-                        "required": false,
-                        "_expanded": true,
-                        "defaultValue": "100",
-                        "_previousName": "",
-                        "jinjaExpressionView": true,
-                        "useRecordFieldDefault": false
-                    },
-                    {
-                        "name": "offset",
-                        "type": "string",
-                        "label": "Offset",
-                        "tooltip": "Specify the offset from the manual input to retrieve.",
-                        "dataType": "text",
-                        "formType": "text",
-                        "required": false,
-                        "_expanded": true,
-                        "defaultValue": "0",
-                        "_previousName": "",
-                        "jinjaExpressionView": true,
-                        "useRecordFieldDefault": false
-                    }
-                ],
+                "inputVariables": [],
                 "step_variables": {
                     "input": {
-                        "params": {
-                            "limit": "{{vars.request.data[\"limit\"]}}",
-                            "offset": "{{vars.request.data[\"offset\"]}}"
-                        },
+                        "params": [],
                         "records": "{{vars.input.records}}"
                     }
                 },

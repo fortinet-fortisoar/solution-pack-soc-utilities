@@ -1,12 +1,12 @@
 {
     "@type": "Workflow",
     "triggerLimit": null,
-    "name": "Delete Pending Manual Input",
+    "name": "Terminates Pending Manual Inputs",
     "aliasName": null,
     "tag": null,
-    "description": "Delete all manual input pending for user action/inputs that have been created before the specified timestamp.",
+    "description": "Terminates all manual input pending for user action\/inputs that have been created before the specified timestamp.",
     "isActive": true,
-    "debug": false,
+    "debug": true,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,
     "parameters": [],
@@ -18,52 +18,25 @@
         {
             "@type": "WorkflowStep",
             "name": "Configurations",
-            "description": null,
+            "description": "Limit: Limit for maximum awaiting manual input to fetch.\noffset: Starting index of the awaiting manual input to fetch, default is 0",
             "arguments": {
-                "limit": "{{vars.input.params.limit if vars.input.params.limit else 10000}}",
+                "limit": "10000",
+                "offset": "0",
                 "delete_old_records_to_till_date": "{{vars.input.params.tillDate}}"
             },
             "status": null,
-            "top": "165",
-            "left": "125",
+            "top": "160",
+            "left": "120",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "db553f46-9b9d-4473-8785-cbf171d9c43a"
         },
         {
             "@type": "WorkflowStep",
-            "name": "Delete Old Manual Input",
-            "description": null,
+            "name": "Filter manual input to be deleted",
+            "description": "Filtering manual input to be terminated",
             "arguments": {
-                "params": {
-                    "iri": "\/api\/wf\/api\/manual-wf-input\/{{vars.item.id}}\/?format=json",
-                    "body": "",
-                    "method": "DELETE"
-                },
-                "version": "3.2.5",
-                "for_each": {
-                    "item": "{{vars.manual_input_records}}",
-                    "parallel": false,
-                    "condition": ""
-                },
-                "connector": "cyops_utilities",
-                "operation": "make_cyops_request",
-                "operationTitle": "FSR: Make FortiSOAR API Call",
-                "step_variables": []
-            },
-            "status": null,
-            "top": "570",
-            "left": "125",
-            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
-            "group": null,
-            "uuid": "4ccc0513-783e-4a04-b338-aed2bab878a0"
-        },
-        {
-            "@type": "WorkflowStep",
-            "name": "Get Old Manual Input",
-            "description": null,
-            "arguments": {
-                "manual_input_records": "{{vars.steps.Get_Pending_Manual_Input.data[\"hydra:member\"] | json_query(\"[?created<='\"+vars.delete_old_records_to_till_date+\"']\")}}"
+                "manual_input_records": "{{vars.steps.Retrieves_all_Pending_Manual_Inputs.data[\"hydra:member\"] | json_query(\"[?created<='\"+vars.delete_old_records_to_till_date+\"']\")}}"
             },
             "status": null,
             "top": "435",
@@ -74,11 +47,11 @@
         },
         {
             "@type": "WorkflowStep",
-            "name": "Get Pending Manual Input",
-            "description": null,
+            "name": "Retrieves all Pending Manual Inputs",
+            "description": "Retrieves a list of manual inputs that are awaiting user action.",
             "arguments": {
                 "params": {
-                    "iri": "\/api\/wf\/api\/manual-wf-input\/list_wfinput\/?format=json&limit={{vars.limit}}&offset=0&ordering=-id&unauthenticated_input=false",
+                    "iri": "\/api\/wf\/api\/manual-wf-input\/list_wfinput\/?format=json&limit={{vars.limit}}&offset={{vars.offset}}&ordering=-id&unauthenticated_input=false",
                     "body": "{\"assigned_to\":\"all\",\"is_approval\":false}",
                     "method": "POST"
                 },
@@ -86,9 +59,7 @@
                 "connector": "cyops_utilities",
                 "operation": "make_cyops_request",
                 "operationTitle": "FSR: Make FortiSOAR API Call",
-                "step_variables": {
-                    "ds": "[]"
-                }
+                "step_variables": []
             },
             "status": null,
             "top": "300",
@@ -131,36 +102,11 @@
                         "allowedGridColumn": true,
                         "jinjaExpressionView": true,
                         "useRecordFieldDefault": false
-                    },
-                    {
-                        "name": "limit",
-                        "type": "integer",
-                        "label": "Limit",
-                        "title": "Integer Field",
-                        "usable": true,
-                        "tooltip": "Specify the limit of manual input records you want to delete",
-                        "dataType": "integer",
-                        "formType": "integer",
-                        "required": false,
-                        "_expanded": true,
-                        "mmdUpdate": true,
-                        "collection": false,
-                        "searchable": true,
-                        "templateUrl": "app\/components\/form\/fields\/integer.html",
-                        "defaultValue": 10000,
-                        "_previousName": "",
-                        "playbookField": true,
-                        "lengthConstraint": true,
-                        "allowedEncryption": false,
-                        "allowedGridColumn": true,
-                        "jinjaExpressionView": true,
-                        "useRecordFieldDefault": false
                     }
                 ],
                 "step_variables": {
                     "input": {
                         "params": {
-                            "limit": "{{vars.request.data[\"limit\"]}}",
                             "tillDate": "{{vars.request.data[\"tillDate\"]}}"
                         },
                         "records": "{{vars.input.records}}"
@@ -178,11 +124,40 @@
                 "singleRecordExecution": false
             },
             "status": null,
-            "top": "20",
-            "left": "120",
+            "top": "30",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
             "group": null,
             "uuid": "0a825e19-1aa0-4948-8db5-68d640f8cdbe"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Terminates Manual Inputs",
+            "description": "Deleting filtered manual input",
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/wf\/api\/manual-wf-input\/{{vars.item.id}}\/?format=json",
+                    "body": "",
+                    "method": "DELETE"
+                },
+                "version": "3.2.5",
+                "for_each": {
+                    "item": "{{vars.manual_input_records}}",
+                    "__bulk": false,
+                    "parallel": true,
+                    "condition": ""
+                },
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "570",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "4ccc0513-783e-4a04-b338-aed2bab878a0"
         }
     ],
     "routes": [

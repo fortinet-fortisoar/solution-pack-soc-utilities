@@ -1,10 +1,10 @@
 {
     "@type": "Workflow",
     "triggerLimit": null,
-    "name": "Add Details to Manual Input",
+    "name": "Create Alert Dataset",
     "aliasName": null,
     "tag": null,
-    "description": "Create data set for existing or missing alert record.",
+    "description": "Create dataset for existing or missing alert record across tenant",
     "isActive": true,
     "debug": false,
     "singleRecordExecution": false,
@@ -19,36 +19,36 @@
     "steps": [
         {
             "@type": "WorkflowStep",
-            "name": "Alert Exist",
+            "name": "Create DataSet of Existing Alert",
             "description": null,
             "arguments": {
-                "conditions": [
-                    {
-                        "option": "Yes",
-                        "step_iri": "\/api\/3\/workflow_steps\/09dd163b-f91f-4040-95d8-8f11ca18be34",
-                        "condition": "{{ vars.steps.Check_Alert_Exists | length > 0 }}",
-                        "step_name": "Create DS"
-                    },
-                    {
-                        "option": "No",
-                        "default": true,
-                        "step_iri": "\/api\/3\/workflow_steps\/aca3c2f3-d773-402c-a79f-9d0caa9baff5",
-                        "step_name": "Create DS of Missing Alert"
-                    }
-                ],
-                "step_variables": []
+                "data": "{\"MI_Title\": \"{{vars.input.params['mi_details'].title}}\",\"Alert_ID\":\"{{vars.steps.Fetch_Related_Alert[0].id}}\",\"Alert_Name\":\"{{vars.steps.Fetch_Related_Alert[0].name}}\",\"Tenant_Name\":\"{{vars.steps.Fetch_Related_Alert[0].tenant.name}}\"}"
             },
             "status": null,
-            "top": "300",
-            "left": "300",
-            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "top": "440",
+            "left": "120",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
-            "uuid": "0cdce59f-19a7-43a6-bb0c-43043775e339"
+            "uuid": "09dd163b-f91f-4040-95d8-8f11ca18be34"
         },
         {
             "@type": "WorkflowStep",
-            "name": "Check Alert Exists",
+            "name": "Create DataSet of Missing Alert",
             "description": null,
+            "arguments": {
+                "data": "{\"MI_Title\": \"{{vars.input.params['mi_details'].title}}\",\"Alert_ID\":\"Alert Missing\",\"Alert_Name\":\"Alert Missing\",\"Tenant_Name\":\"Alert Missing\"}"
+            },
+            "status": null,
+            "top": "440",
+            "left": "480",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "aca3c2f3-d773-402c-a79f-9d0caa9baff5"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Fetch Related Alert",
+            "description": "Check if the alert is related to manual input",
             "arguments": {
                 "when": "{{vars.input.params['mi_details'].record}}",
                 "query": {
@@ -83,31 +83,31 @@
         },
         {
             "@type": "WorkflowStep",
-            "name": "Create Data Set of Existing Alert",
+            "name": "Is Alert Exist",
             "description": null,
             "arguments": {
-                "data": "{\"MI_Title\": \"{{vars.input.params['mi_details'].title}}\",\"Alert_ID\":\"{{vars.steps.Check_Alert_Exists[0].id}}\",\"Alert_Name\":\"{{vars.steps.Check_Alert_Exists[0].name}}\",\"Tenant_Name\":\"{{vars.steps.Check_Alert_Exists[0].tenant.name}}\"}"
+                "conditions": [
+                    {
+                        "option": "Yes",
+                        "step_iri": "\/api\/3\/workflow_steps\/09dd163b-f91f-4040-95d8-8f11ca18be34",
+                        "condition": "{{ vars.steps.Fetch_Related_Alert | length > 0 }}",
+                        "step_name": "Create Data Set of Existing Alert"
+                    },
+                    {
+                        "option": "No",
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/aca3c2f3-d773-402c-a79f-9d0caa9baff5",
+                        "step_name": "Create Data Set of Missing Alert"
+                    }
+                ],
+                "step_variables": []
             },
             "status": null,
-            "top": "440",
-            "left": "120",
-            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "top": "300",
+            "left": "300",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
             "group": null,
-            "uuid": "09dd163b-f91f-4040-95d8-8f11ca18be34"
-        },
-        {
-            "@type": "WorkflowStep",
-            "name": "Create Data Set of Missing Alert",
-            "description": null,
-            "arguments": {
-                "data": "{\"MI_Title\": \"{{vars.input.params['mi_details'].title}}\",\"Alert_ID\":\"Alert Missing\",\"Alert_Name\":\"Alert Missing\",\"Tenant_Name\":\"Alert Missing\"}"
-            },
-            "status": null,
-            "top": "440",
-            "left": "480",
-            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
-            "group": null,
-            "uuid": "aca3c2f3-d773-402c-a79f-9d0caa9baff5"
+            "uuid": "0cdce59f-19a7-43a6-bb0c-43043775e339"
         },
         {
             "@type": "WorkflowStep",

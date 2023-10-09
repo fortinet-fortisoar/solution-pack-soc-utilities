@@ -368,6 +368,34 @@
         },
         {
             "@type": "WorkflowStep",
+            "name": "Is Unique Constraint Violation",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "option": "Yes",
+                        "step_iri": "\/api\/3\/workflow_steps\/8338b6ed-75a7-4884-b360-587330a445ef",
+                        "condition": "{{ 'UniqueConstraintViolationException' in vars.steps.Create_new_Module['Error message'] }}",
+                        "step_name": "Error Message"
+                    },
+                    {
+                        "option": "No",
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/ea611e30-3e04-4de9-b5c2-fca29e0c197e",
+                        "step_name": "Create View Templates"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "1478",
+            "left": "608",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": null,
+            "uuid": "0447a962-5974-452b-96ba-fa62a7fd719d"
+        },
+        {
+            "@type": "WorkflowStep",
             "name": "Publish Module",
             "description": null,
             "arguments": {
@@ -442,71 +470,6 @@
         },
         {
             "@type": "WorkflowStep",
-            "name": "Update module schema",
-            "description": null,
-            "arguments": {
-                "staging_module_schema": "{%- set staging_schema = vars.old_module_schema | replace(vars.old_module_uuid, vars.new_module_uuid) | toDict -%}\n{%- do staging_schema.update({\"type\": vars.new_module_metadata.type, \"tableName\": vars.new_module_metadata.type, \"module\": vars.new_module_metadata.type, \"descriptions\": {\"singular\": vars.new_module_metadata.singular, \"plural\": vars.new_module_metadata.plural}}) -%}\n{%- do staging_schema.pop('@id') -%}\n\n{%- set uniqueness = ( staging_schema | json_query('uniqueConstraint[].*[]') |first) -%}\n{%- set unique_columns= {(vars.new_module_metadata.type + \"_unique\") : uniqueness} -%}\n{%- do staging_schema.update({ \"uniqueConstraint\": [unique_columns] }) -%}\n\n{%- for attribute in staging_schema['attributes'] -%}\n\t{%- do attribute.pop('inversedField') -%}\n    {%- do attribute.pop('uuid') -%}\n    {%- do attribute.pop('@id') -%}\n    {%- do attribute.update({\"sattrib\": (\"\/api\/3\/staging_model_metadatas\/\" + vars.new_module_uuid )}) -%}\n  \n\t{%- if attribute.formType == \"manyToMany\"-%}\n\t\t{%- do attribute.update({\"dataType\": \"manyToMany\", \"displayTemplate\": \"{{title}}\",  \"isNew\": true, \"mmdUpdate\": true, \"title\": \"Many to Many\",  \"usable\": true }) -%}\n\t{%- elif attribute.formType == \"oneToMany\"-%}\n    \t{%- do attribute.update({\"dataType\": \"oneToMany\",  \"isNew\": true, \"mmdUpdate\": true, \"title\": \"Many to One\",  \"usable\": true, \"bulkAction\": {} }) -%}\n        {%- do staging_schema.update({\"_changed\": true}) -%}\n\t{%- endif -%}\n  \n{%- endfor -%}\n{{staging_schema}}"
-            },
-            "status": null,
-            "top": "1748",
-            "left": "433",
-            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
-            "group": null,
-            "uuid": "4b151750-12b4-44dd-823d-664ca258e6c0"
-        },
-        {
-            "@type": "WorkflowStep",
-            "name": "Update staging schema with modified schema",
-            "description": null,
-            "arguments": {
-                "params": {
-                    "iri": "\/api\/3\/staging_model_metadatas\/{{vars.new_module_uuid}}?$relationships=true",
-                    "body": "{{vars.staging_module_schema}}",
-                    "method": "PUT"
-                },
-                "version": "3.2.3",
-                "connector": "cyops_utilities",
-                "operation": "make_cyops_request",
-                "operationTitle": "FSR: Make FortiSOAR API Call",
-                "step_variables": []
-            },
-            "status": null,
-            "top": "1883",
-            "left": "433",
-            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
-            "group": null,
-            "uuid": "c4bf1d6e-e6c2-4add-b277-862ab465d52d"
-        },
-        {
-            "@type": "WorkflowStep",
-            "name": "Is Unique Constraint Violation",
-            "description": null,
-            "arguments": {
-                "conditions": [
-                    {
-                        "option": "Yes",
-                        "step_iri": "\/api\/3\/workflow_steps\/8338b6ed-75a7-4884-b360-587330a445ef",
-                        "condition": "{{ 'UniqueConstraintViolationException' in vars.steps.Create_new_Module['Error message'] }}",
-                        "step_name": "Error Message"
-                    },
-                    {
-                        "option": "No",
-                        "default": true,
-                        "step_iri": "\/api\/3\/workflow_steps\/ea611e30-3e04-4de9-b5c2-fca29e0c197e",
-                        "step_name": "Create View Templates"
-                    }
-                ],
-                "step_variables": []
-            },
-            "status": null,
-            "top": "1478",
-            "left": "608",
-            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
-            "group": null,
-            "uuid": "0447a962-5974-452b-96ba-fa62a7fd719d"
-        },
-        {
-            "@type": "WorkflowStep",
             "name": "Unique Constraint Violation Error Message",
             "description": null,
             "arguments": {
@@ -551,6 +514,43 @@
             "stepType": "\/api\/3\/workflow_step_types\/fc04082a-d7dc-4299-96fb-6837b1baa0fe",
             "group": null,
             "uuid": "8338b6ed-75a7-4884-b360-587330a445ef"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Update module schema",
+            "description": null,
+            "arguments": {
+                "staging_module_schema": "{%- set staging_schema = vars.old_module_schema | replace(vars.old_module_uuid, vars.new_module_uuid) | toDict -%}\n{%- do staging_schema.update({\"type\": vars.new_module_metadata.type, \"tableName\": vars.new_module_metadata.type, \"module\": vars.new_module_metadata.type, \"descriptions\": {\"singular\": vars.new_module_metadata.singular, \"plural\": vars.new_module_metadata.plural}}) -%}\n{%- do staging_schema.pop('@id') -%}\n\n{%- set uniqueness = ( staging_schema | json_query('uniqueConstraint[].*[]') |first) -%}\n{%- set unique_columns= {(vars.new_module_metadata.type + \"_unique\") : uniqueness} -%}\n{%- do staging_schema.update({ \"uniqueConstraint\": [unique_columns] }) -%}\n\n{%- for attribute in staging_schema['attributes'] -%}\n\t{%- do attribute.pop('inversedField') -%}\n    {%- do attribute.pop('uuid') -%}\n    {%- do attribute.pop('@id') -%}\n    {%- do attribute.update({\"sattrib\": (\"\/api\/3\/staging_model_metadatas\/\" + vars.new_module_uuid )}) -%}\n  \n\t{%- if attribute.formType == \"manyToMany\"-%}\n\t\t{%- do attribute.update({\"dataType\": \"manyToMany\", \"displayTemplate\": \"{{title}}\",  \"isNew\": true, \"mmdUpdate\": true, \"title\": \"Many to Many\",  \"usable\": true }) -%}\n\t{%- elif attribute.formType == \"oneToMany\"-%}\n    \t{%- do attribute.update({\"dataType\": \"oneToMany\",  \"isNew\": true, \"mmdUpdate\": true, \"title\": \"Many to One\",  \"usable\": true, \"bulkAction\": {} }) -%}\n        {%- do staging_schema.update({\"_changed\": true}) -%}\n\t{%- endif -%}\n  \n{%- endfor -%}\n{{staging_schema}}"
+            },
+            "status": null,
+            "top": "1748",
+            "left": "433",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "4b151750-12b4-44dd-823d-664ca258e6c0"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Update staging schema with modified schema",
+            "description": null,
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/3\/staging_model_metadatas\/{{vars.new_module_uuid}}?$relationships=true",
+                    "body": "{{vars.staging_module_schema}}",
+                    "method": "PUT"
+                },
+                "version": "3.2.3",
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "1883",
+            "left": "433",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "c4bf1d6e-e6c2-4add-b277-862ab465d52d"
         }
     ],
     "routes": [
