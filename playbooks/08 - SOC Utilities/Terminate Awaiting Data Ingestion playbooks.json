@@ -6,7 +6,7 @@
     "tag": null,
     "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state from last x minutes",
     "isActive": true,
-    "debug": true,
+    "debug": false,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,
     "parameters": [],

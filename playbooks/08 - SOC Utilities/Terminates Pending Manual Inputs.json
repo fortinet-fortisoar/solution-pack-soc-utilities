@@ -6,7 +6,7 @@
     "tag": null,
     "description": "Terminates all manual input pending for user action\/inputs that have been created before the specified timestamp.",
     "isActive": true,
-    "debug": true,
+    "debug": false,
     "singleRecordExecution": false,
     "remoteExecutableFlag": false,
     "parameters": [],
