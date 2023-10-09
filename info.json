@@ -14,13 +14,13 @@
         }
     ],
     "prerequisite": "",
-    "publisher": "Fortinet",
+    "publisher": "Fortinet CSE",
     "description": "SOC Utilities Solution Pack is designed around utilities to aid in the use of FortiSOAR.",
     "help": null,
     "category": [
         "Utilities"
     ],
-    "supportInfo": "Fortinet Customer Support",
+    "supportInfo": null,
     "iconLarge": null,
     "postInstallConfig": {
         "enabled": false
