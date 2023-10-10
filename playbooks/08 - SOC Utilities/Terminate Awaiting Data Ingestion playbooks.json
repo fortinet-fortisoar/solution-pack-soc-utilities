@@ -18,17 +18,18 @@
         {
             "@type": "WorkflowStep",
             "name": "Configurations",
-            "description": "Limit: Limit for maximum awaiting playbook to fetch.\noffset: Starting index of the awaiting playbook to fetch, default is 0",
+            "description": "Limit: Limit for maximum awaiting data ingestion playbook to fetch.\noffset: Starting index of the awaiting data ingestion playbook to fetch, default is 0\nbatch_size: Maximum batch size to terminate the data ingestion playbooks.",
             "arguments": {
-                "user": "{{vars.request.currentUser}}",
+                "user": "{{vars.request.currentUser if vars.request.currentUser else \"/api/3/people/5776d19f-5319-4eff-806c-2125eeed2393\"}}",
                 "limit": "10000",
                 "offset": "0",
+                "batch_size": "5",
                 "last_x_minute": "{{vars.input.params.lastXMinutes}}",
                 "send_notification": "false"
             },
             "status": null,
-            "top": "160",
-            "left": "520",
+            "top": "165",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad"
@@ -43,7 +44,7 @@
             },
             "status": null,
             "top": "300",
-            "left": "520",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "a0f27e71-da89-4f3a-bad8-8d5628633cf8"
@@ -53,11 +54,11 @@
             "name": "Create DataSet",
             "description": "Creates dataset for awaiting playbooks which are stuck in awaiting state from specified timestamp",
             "arguments": {
-                "dataset_awaiting_paybooks": "{{vars.steps.Get_Awaiting_Playbooks_of_Manual_Input.data['hydra:member'] | json_query('[].{WFID: \"@id\",Name : name,Status : status,Awaiting_since: modified }')}}"
+                "dataset_awaiting_playbooks": "{{vars.steps.Get_Awaiting_Playbooks_of_Manual_Input.data['hydra:member'] | json_query('[].{WFID: \"@id\",Name : name,Status : status,Awaiting_since: modified }')}}"
             },
             "status": null,
-            "top": "560",
-            "left": "520",
+            "top": "570",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
             "group": null,
             "uuid": "ce74c0c3-937e-454a-9b2e-2487d5dce8a6"
@@ -76,13 +77,11 @@
                 "connector": "cyops_utilities",
                 "operation": "make_cyops_request",
                 "operationTitle": "FSR: Make FortiSOAR API Call",
-                "step_variables": {
-                    "bulk_teminate_payload": "[]"
-                }
+                "step_variables": []
             },
             "status": null,
-            "top": "440",
-            "left": "520",
+            "top": "435",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "6525d7a2-bacd-434c-9497-e364d055e2c0"
@@ -109,8 +108,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "700",
-            "left": "520",
+            "top": "705",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
             "group": null,
             "uuid": "02952ca1-535a-40cc-934b-28c72c5e0e1d"
@@ -120,7 +119,7 @@
             "name": "Send Notification",
             "description": "Send Dataset to specified email address",
             "arguments": {
-                "when": "{{vars.dataset_awaiting_paybooks | length > 0}}",
+                "when": "{{vars.dataset_awaiting_playbooks | length > 0}}",
                 "config": "14ca52f1-89b2-450f-be79-7201ac56d058",
                 "params": {
                     "cc": "",
@@ -128,7 +127,7 @@
                     "bcc": "",
                     "from": "",
                     "type": "Manual Input",
-                    "content": "<p>&nbsp; Following are details for data ingestion playbooks which are stuck in <span style=\"background: #F5A623; color: #fff;\" class=\"badge badge-pill badge-danger\">Awaiting State<\/span><\/p>\n<p>&nbsp;<\/p>\n<p>{% for item in vars.dataset_awaiting_paybooks %}<\/p>\n<ul style=\"list-style-type: square;\">\n<li><strong>Name <\/strong> - {{ item.Name | title }} ;<strong> Current Status<\/strong> - {{item.Status | title }} ;&nbsp; <strong>Awaiting Since<\/strong>&nbsp;- {{item.Awaiting_since.replace(\"T\",\" \").split('.')[0]}}<\/li>\n<\/ul>\n<p>{% endfor %}<\/p>",
+                    "content": "<p>&nbsp; Following are details for data ingestion playbooks which are stuck in <span style=\"background: #F5A623; color: #fff;\" class=\"badge badge-pill badge-danger\">Awaiting State<\/span><\/p>\n<p>&nbsp;<\/p>\n<p>{% for item in vars.dataset_awaiting_playbooks %}<\/p>\n<ul style=\"list-style-type: square;\">\n<li><strong>Name <\/strong> - {{ item.Name | title }} ;<strong> Current Status<\/strong> - {{item.Status | title }} ;&nbsp; <strong>Awaiting Since<\/strong>&nbsp;- {{item.Awaiting_since.replace(\"T\",\" \").split('.')[0]}}<\/li>\n<\/ul>\n<p>{% endfor %}<\/p>",
                     "subject": "Data Ingestion Playbooks In Awaiting State",
                     "iri_list": "",
                     "body_type": "Rich Text",
@@ -143,8 +142,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "840",
-            "left": "340",
+            "top": "820",
+            "left": "520",
             "stepType": "\/api\/3\/workflow_step_types\/4c0019b2-055c-44d0-968c-678a0c2d762e",
             "group": null,
             "uuid": "65ff0e1c-ae72-4bb3-9cf0-7ae1a45d5c80"
@@ -206,7 +205,7 @@
             },
             "status": null,
             "top": "30",
-            "left": "525",
+            "left": "125",
             "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
             "group": null,
             "uuid": "a537bd79-9305-4c1c-a92d-c8d1e5fe65be"
@@ -216,7 +215,7 @@
             "name": "Terminate Playbooks",
             "description": "Terminates all data ingestion playbooks which are stuck in awaiting state.",
             "arguments": {
-                "when": "{{vars.dataset_awaiting_paybooks}}",
+                "when": "{{vars.dataset_awaiting_playbooks}}",
                 "params": {
                     "iri": "\/api\/wf\/workflow\/revoke\/tasks\/?format=json",
                     "body": "{\"wfLogId\":{{vars.item.WFID.split(\"\/\")[-2]}},\"user\":\"{{vars.user}}\"}",
@@ -224,7 +223,7 @@
                 },
                 "version": "3.2.5",
                 "for_each": {
-                    "item": "{{vars.dataset_awaiting_paybooks}}",
+                    "item": "{{vars.dataset_awaiting_playbooks}}",
                     "__bulk": false,
                     "parallel": true,
                     "condition": ""
@@ -235,8 +234,8 @@
                 "step_variables": []
             },
             "status": null,
-            "top": "840",
-            "left": "700",
+            "top": "980",
+            "left": "120",
             "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
             "group": null,
             "uuid": "e212ab38-c8dc-4638-b04c-c3787ef50fff"
@@ -281,7 +280,7 @@
             "label": null,
             "isExecuted": false,
             "group": null,
-            "uuid": "2eb55a93-6901-4160-add6-dae42478a796"
+            "uuid": "9207a860-d9fc-422e-8466-086cfacd97bf"
         },
         {
             "@type": "WorkflowRoute",
@@ -301,7 +300,7 @@
             "label": "No",
             "isExecuted": false,
             "group": null,
-            "uuid": "66c2e61a-3264-4618-b8d2-d45e25e152d5"
+            "uuid": "af72698f-86c9-49fe-8522-9752023afdad"
         },
         {
             "@type": "WorkflowRoute",
