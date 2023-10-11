@@ -131,7 +131,9 @@ This playbook gives you the ability to retrieves all pending manual input record
 2. Click the  **Extract Related Alert of Pending Manual Input in CSV** playbook to open it
 
 3. Click the play button at the top right
-![Play Button](./res/play_button.png)
+
+ ![Play Button](./res/play_button.png)
+
 5. After successfully executing the playbook, Retrieves all pending manual input records for user action/input and generates and stores CSV attachments for relevant and missing notifications and stores them in the FortisOAR attachment module.
 ![Play Button](./res/csv_attachment.png)
 
