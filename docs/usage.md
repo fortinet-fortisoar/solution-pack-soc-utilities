@@ -89,38 +89,29 @@ The new module is now visible in the navigation pane.
 This playbook gives you the ability to terminate all manual input playbooks that are pending user action/input that have been created before the specified timestamp.
 
 
-1. Click the  **Terminates Pending Manual Inputs** playbook to open it
+1. Navigate to Alerts module then click to the **Execute** Button
 
-2. Click the FortiSOAR Alerts
-
-3. Click the **Execute** Button
-
-4. Select the **Terminates Pending Manual Inputs** playbook for trigger
+2. Select the **Terminates Pending Manual Inputs** playbook for trigger
 
 ![Terminate Manual Input](./res/trigger_terminate_manual_input.png)
 
-5. Select the DateTime using which you want to delete manual input records that have been created before the specified timestamp.
+3. Select the DateTime using which you want to delete manual input records that have been created before the specified timestamp.
 ![TillDate](./res/till_date.png)
-6. After successfully executing the playbook, Terminates all manual input playbooks awaiting for user action/input up to the timestamp.
+4. After successfully executing the playbook, Terminates all manual input playbooks awaiting for user action/input up to the timestamp.
 ![Result](./res/output_teminates_manual_input_playbooks.png)
 
 
 ## Utility Playbook &mdash; Terminate Awaiting Data Ingestion playbooks
 This playbook gives you the ability to terminate a list of data ingestion playbooks which are stuck in awaiting state till the specified last x minutes.
+1. Navigate to Alerts module then click to the **Execute** Button
 
-1. Click the  **Terminate Awaiting Data Ingestion playbooks** playbook to open it
-
-2. Click the FortiSOAR Alerts
-
-3. Click the **Execute** Button
-
-4. Select the **Terminate Awaiting Data Ingestion playbooks** playbook for trigger
+2. Select the **Terminate Awaiting Data Ingestion playbooks** playbook for trigger
 
 ![Terminate Data Ingestion Playbooks](./res/terminate_dl_playbooks.png)
 
-5. Provides a last x minutes, Terminate a list of data ingestion playbooks which are stuck in awaiting state till the specified last x minutes.
+3. Provides a last x minutes, Terminate a list of data ingestion playbooks which are stuck in awaiting state till the specified last x minutes.
 ![Terminate Data Ingestion Playbooks](./res/last_x_minute.png)
-6. After successfully executing the playbook, Terminate a list of data ingestion playbooks which are stuck in awaiting state till the specified last x minutes.
+4. After successfully executing the playbook, Terminate a list of data ingestion playbooks which are stuck in awaiting state till the specified last x minutes.
 ![Result](./res/output_terminate_dl_playbooks.png)
 
 | [Installation](./setup.md#installation) | [Configuration](./setup.md#configuration) | [Contents](./contents.md) |
@@ -128,9 +119,9 @@ This playbook gives you the ability to terminate a list of data ingestion playbo
 
 ## Utility Playbook &mdash; Extract Related Alert of Pending Manual Input in CSV
 This playbook gives you the ability to retrieves all pending manual input records for user action/input and generates and stores CSV attachments for related and missing alerts and stores them in the FortiSOAR attachment module.
-2. Click the  **Extract Related Alert of Pending Manual Input in CSV** playbook to open it
+1. Click the  **Extract Related Alert of Pending Manual Input in CSV** playbook to open it
 
-3. Click the play button at the top right
+2. Click the play button at the top right
 
  ![Play Button](./res/play_button.png)
 
