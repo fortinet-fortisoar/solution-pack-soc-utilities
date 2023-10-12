@@ -88,7 +88,6 @@ The new module is now visible in the navigation pane.
 ## Utility Playbook &mdash; Terminates Pending Manual Inputs
 This playbook gives you the ability to terminate all manual input playbooks that are pending user action/input that have been created before the specified timestamp.
 
-
 1. Navigate to Alerts module then click to the **Execute** Button
 
 2. Select the **Terminates Pending Manual Inputs** playbook for trigger
@@ -98,7 +97,7 @@ This playbook gives you the ability to terminate all manual input playbooks that
 3. Select the DateTime using which you want to delete manual input records that have been created before the specified timestamp.
 ![TillDate](./res/till_date.png)
 4. After successfully executing the playbook, Terminates all manual input playbooks awaiting for user action/input up to the timestamp.
-![Result](./res/output_teminates_manual_input_playbooks.png)
+![Result](./res/output_terminate_manual_input_playbooks.png)
 
 
 ## Utility Playbook &mdash; Terminate Awaiting Data Ingestion playbooks
@@ -123,7 +122,7 @@ This playbook gives you the ability to retrieves all pending manual input record
 
 2. Click the play button at the top right
 
- ![Play Button](./res/play_button.png)
+ ![Play Button](./res/trigger_playbook_option.png)
 
 5. After successfully executing the playbook, Retrieves all pending manual input records for user action/input and generates and stores CSV attachments for relevant and missing notifications and stores them in the FortisOAR attachment module.
 ![Play Button](./res/csv_attachment.png)
