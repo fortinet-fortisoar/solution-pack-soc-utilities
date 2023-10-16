@@ -4,7 +4,7 @@
     "name": "Terminate Awaiting Data Ingestion playbooks",
     "aliasName": null,
     "tag": null,
-    "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state from last x minutes",
+    "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state till last x minutes.",
     "isActive": true,
     "debug": true,
     "singleRecordExecution": false,
@@ -20,7 +20,7 @@
             "name": "Configurations",
             "description": "Limit: Limit for maximum awaiting data ingestion playbook to fetch.\noffset: Starting index of the awaiting data ingestion playbook to fetch, default is 0\nbatch_size: Maximum batch size to terminate the data ingestion playbooks.",
             "arguments": {
-                "user": "{{vars.request.currentUser if vars.request.currentUser else \/api\/3\/people\/5776d19f-5319-4eff-806c-2125eeed2393}}",
+                "user": "{{vars.request.currentUser if vars.request.currentUser else \"/api/3/people/5776d19f-5319-4eff-806c-2125eeed2393\"}}",
                 "limit": "10000",
                 "offset": "0",
                 "batch_size": "5",
