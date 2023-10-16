@@ -4,7 +4,7 @@
     "name": "Extract Related Alert of Pending Manual Input in CSV",
     "aliasName": null,
     "tag": null,
-    "description": "Retrieve all pending manual input records for user action\/input and generates CSV attachments for related and missing alerts.",
+    "description": "Retrieve all pending manual input alert records for user action/input and generates CSV attachments for related and missing alerts.",
     "isActive": true,
     "debug": false,
     "singleRecordExecution": false,

@@ -4,7 +4,7 @@
     "name": "Terminate Awaiting Data Ingestion playbooks",
     "aliasName": null,
     "tag": null,
-    "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state from last x minutes",
+    "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state till last x minutes.",
     "isActive": true,
     "debug": true,
     "singleRecordExecution": false,
