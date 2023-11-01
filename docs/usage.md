@@ -27,8 +27,8 @@ This playbook gives you the ability to clone a FortiSOAR module. Currently there
 
 6. Click the **Next** button
 
-> **Note:** If Module with same name already exists. A popup with error message appears.
-   ![Error Message](./res/error_message.png)
+   >**Note:** If Module with same name already exists. A popup with error message appears.
+      ![Error Message](./res/error_message.png)
 
 7. This may take 10-15 seconds to run. After you will see a popup with two options.
 
