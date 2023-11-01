@@ -127,14 +127,15 @@ This playbook gives you the ability to terminate a list of data ingestion playbo
 
 This playbook gives you the ability to retrieves all pending manual input records for an user action/input and generates CSV.
 
-1. Click the  **Extract Related Alert of Pending Manual Input in CSV** playbook to open it
+1. Navigate to Alerts module then click to the **Execute** Button
 
-2. Click the Play button at the top right
+2. Select the **Extract Related Alert of Pending Manual Input in CSV** playbook for trigger
 
    ![Play Button](./res/trigger_playbook_option.png)
 
 3. After successfully executing the playbook, retrieves all pending manual input records for an user action/input and
    generates CSV and stores it as an attachment in FortiSOAR attachment module for related and missing alerts.
+   
    ![Play Button](./res/csv_attachment.png)
 
 | [Installation](./setup.md#installation) | [Configuration](./setup.md#configuration) | [Contents](./contents.md) |
