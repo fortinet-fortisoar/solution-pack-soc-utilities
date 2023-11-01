@@ -89,7 +89,7 @@ This playbook gives you the ability to clone a FortiSOAR module. Currently there
    ![Alt text](./res/navigation_icon.png)
 
 ## Utility Playbook &mdash; Terminates Pending Manual Inputs
-This playbook gives you the ability to terminate all manual input playbooks that are pending user action/input that have been created before the specified timestamp.
+This playbook gives you the ability to terminate all manual inputs that are pending for an user action/input created before the specified timestamp.
 
 1. Navigate to Alerts module then click to the **Execute** Button
 
@@ -97,15 +97,17 @@ This playbook gives you the ability to terminate all manual input playbooks that
 
    ![Terminate Manual Input](./res/trigger_terminate_manual_input.png)
 
-3. Select the DateTime using which you want to delete manual input records that have been created before the specified timestamp.
+3. Select the DateTime using which you want to terminate all manual inputs that have been created before the specified timestamp.
+
    ![TillDate](./res/till_date.png)
-4. After successfully executing the playbook, Terminates all manual input playbooks awaiting for user action/input up to the timestamp.
+   
+5. After successfully executing the playbook, terminates all manual inputs pending for an user action/input created before the specified timestamp.
+
    ![Result](./res/output_terminate_manual_input_playbooks.png)
 
 ## Utility Playbook &mdash; Terminate Awaiting Data Ingestion playbooks
 
-This playbook gives you the ability to terminate a list of data ingestion playbooks which are stuck in awaiting state
-till the specified last x minutes.
+This playbook gives you the ability to terminate a list of data ingestion playbooks which are in awaiting state till the specified last x minutes.
 
 1. Navigate to Alerts module then click to the **Execute** Button
 
@@ -113,27 +115,27 @@ till the specified last x minutes.
 
    ![Terminate Data Ingestion Playbooks](./res/terminate_dl_playbooks.png)
 
-3. Provides a last x minutes, Terminate a list of data ingestion playbooks which are stuck in awaiting state till the
-   specified last x minutes.
+3. Provide last x minutes, terminate list of data ingestion playbooks which are in awaiting state till the specified last x minutes.
+
    ![Terminate Data Ingestion Playbooks](./res/last_x_minute.png)
-4. After successfully executing the playbook, Terminate a list of data ingestion playbooks which are stuck in awaiting
-   state till the specified last x minutes.
+   
+5. After successfully executing the playbook, terminate list of data ingestion playbooks which are in awaiting state till the specified last x minutes.
+
    ![Result](./res/output_terminate_dl_playbooks.png)
 
 ## Utility Playbook &mdash; Extract Related Alert of Pending Manual Input in CSV
 
-This playbook gives you the ability to retrieves all pending manual input records for user action/input and generates
-and stores CSV attachments for related and missing alerts and stores them in the FortiSOAR attachment module.
+This playbook gives you the ability to retrieves all pending manual input records for an user action/input and generates CSV.
 
-1. Click the  **Extract Related Alert of Pending Manual Input in CSV** playbook to open it
+1. Navigate to Alerts module then click to the **Execute** Button
 
-2. Click the play button at the top right
+2. Select the **Extract Related Alert of Pending Manual Input in CSV** playbook for trigger
 
    ![Play Button](./res/trigger_playbook_option.png)
 
-3. After successfully executing the playbook, Retrieves all pending manual input records for user action/input and
-   generates and stores CSV attachments for relevant and missing notifications and stores them in the FortisOAR
-   attachment module.
+3. After successfully executing the playbook, retrieves all pending manual input records for an user action/input and
+   generates CSV and stores it as an attachment in FortiSOAR attachment module for related and missing alerts.
+   
    ![Play Button](./res/csv_attachment.png)
 
 | [Installation](./setup.md#installation) | [Configuration](./setup.md#configuration) | [Contents](./contents.md) |
