@@ -1,0 +1,335 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Terminate Awaiting Data Ingestion playbooks",
+    "aliasName": null,
+    "tag": null,
+    "description": "Terminates list of data ingestion playbooks which are stuck in awaiting state till last x minutes.",
+    "isActive": true,
+    "debug": true,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/503555f4-07bd-4d56-b732-63defb0d3e76",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/a537bd79-9305-4c1c-a92d-c8d1e5fe65be",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Configurations",
+            "description": "Limit: Limit for maximum awaiting data ingestion playbook to fetch.\noffset: Starting index of the awaiting data ingestion playbook to fetch, default is 0\nbatch_size: Maximum batch size to terminate the data ingestion playbooks.",
+            "arguments": {
+                "user": "{{vars.request.currentUser if vars.request.currentUser else \"/api/3/people/5776d19f-5319-4eff-806c-2125eeed2393\"}}",
+                "limit": "10000",
+                "offset": "0",
+                "batch_size": "5",
+                "last_x_minute": "{{vars.input.params.lastXMinutes}}",
+                "send_notification": "false"
+            },
+            "status": null,
+            "top": "160",
+            "left": "120",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Convert last X minute Datetime",
+            "description": "Converting last x minutes timestamp to YYYY-MM-DD+HH:mm:ss format.",
+            "arguments": {
+                "current_time": "{{arrow.utcnow().format(\"YYYY-MM-DD+HH:mm:ss\")}}",
+                "last_timestamp": "{{arrow.utcnow().shift(minutes=-vars.last_x_minute).format(\"YYYY-MM-DD+HH:mm:ss\")}}"
+            },
+            "status": null,
+            "top": "300",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "a0f27e71-da89-4f3a-bad8-8d5628633cf8"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Create DataSet",
+            "description": "Creates dataset for awaiting playbooks which are stuck in awaiting state from specified timestamp",
+            "arguments": {
+                "dataset_awaiting_paybooks": "{{vars.steps.Get_Awaiting_Playbooks_of_Manual_Input.data['hydra:member'] | json_query('[].{WFID: \"@id\",Name : name,Status : status,Awaiting_since: modified }')}}"
+            },
+            "status": null,
+            "top": "570",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "ce74c0c3-937e-454a-9b2e-2487d5dce8a6"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Get Awaiting Playbooks of Manual Input",
+            "description": "Retrieves all data ingestion playbooks stuck in the awaiting state from the specified timestamp",
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/wf\/api\/workflows\/log_list\/?format=json&limit={{vars.limit}}&modified_before={{vars.last_timestamp}}&offset={{vars.offset}}&ordering=-modified&page=1&parent__isnull=True&tags_exclude=system&status=awaiting&tags_include=dataingestion",
+                    "body": "",
+                    "method": "POST"
+                },
+                "version": "3.2.5",
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "435",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "6525d7a2-bacd-434c-9497-e364d055e2c0"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Is Send Notification",
+            "description": null,
+            "arguments": {
+                "conditions": [
+                    {
+                        "option": "Yes",
+                        "step_iri": "\/api\/3\/workflow_steps\/65ff0e1c-ae72-4bb3-9cf0-7ae1a45d5c80",
+                        "condition": "{{ vars.send_notification }}",
+                        "step_name": "Send Notification"
+                    },
+                    {
+                        "option": "No",
+                        "default": true,
+                        "step_iri": "\/api\/3\/workflow_steps\/e212ab38-c8dc-4638-b04c-c3787ef50fff",
+                        "step_name": "Terminate Playbooks"
+                    }
+                ],
+                "step_variables": []
+            },
+            "status": null,
+            "top": "705",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/12254cf5-5db7-4b1a-8cb1-3af081924b28",
+            "group": null,
+            "uuid": "02952ca1-535a-40cc-934b-28c72c5e0e1d"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Send Notification",
+            "description": "Send Dataset to specified email address",
+            "arguments": {
+                "when": "{{vars.dataset_awaiting_paybooks | length > 0}}",
+                "config": "14ca52f1-89b2-450f-be79-7201ac56d058",
+                "params": {
+                    "cc": "",
+                    "to": "noreply@example.com",
+                    "bcc": "",
+                    "from": "",
+                    "type": "Manual Input",
+                    "content": "<p>&nbsp; Following are details for data ingestion playbooks which are stuck in <span style=\"background: #F5A623; color: #fff;\" class=\"badge badge-pill badge-danger\">Awaiting State<\/span><\/p>\n<p>&nbsp;<\/p>\n<p>{% for item in vars.dataset_awaiting_paybooks %}<\/p>\n<ul style=\"list-style-type: square;\">\n<li><strong>Name <\/strong> - {{ item.Name | title }} ;<strong> Current Status<\/strong> - {{item.Status | title }} ;&nbsp; <strong>Awaiting Since<\/strong>&nbsp;- {{item.Awaiting_since.replace(\"T\",\" \").split('.')[0]}}<\/li>\n<\/ul>\n<p>{% endfor %}<\/p>",
+                    "subject": "Data Ingestion Playbooks In Awaiting State",
+                    "iri_list": "",
+                    "body_type": "Rich Text",
+                    "file_name": "",
+                    "file_path": ""
+                },
+                "version": "2.5.0",
+                "from_str": "admin@example.com",
+                "connector": "smtp",
+                "operation": "send_email_new",
+                "operationTitle": "Send Email (Advanced)",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "820",
+            "left": "520",
+            "stepType": "\/api\/3\/workflow_step_types\/4c0019b2-055c-44d0-968c-678a0c2d762e",
+            "group": null,
+            "uuid": "65ff0e1c-ae72-4bb3-9cf0-7ae1a45d5c80"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "route": "55dbe4c4-313e-44c3-9c03-2bd8ad78334d",
+                "resources": [
+                    "alerts"
+                ],
+                "__triggerLimit": true,
+                "inputVariables": [
+                    {
+                        "name": "lastXMinutes",
+                        "type": "integer",
+                        "label": "Last X Minutes",
+                        "title": "Integer Field",
+                        "usable": true,
+                        "tooltip": "Specify a timestamp of the last x minutes, terminating all awaiting data ingestion playbooks before that timestamp.",
+                        "dataType": "integer",
+                        "formType": "integer",
+                        "required": true,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "searchable": true,
+                        "templateUrl": "app\/components\/form\/fields\/integer.html",
+                        "defaultValue": 30,
+                        "_previousName": "lastXMinute",
+                        "playbookField": true,
+                        "lengthConstraint": true,
+                        "allowedEncryption": false,
+                        "allowedGridColumn": true,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    }
+                ],
+                "step_variables": {
+                    "input": {
+                        "params": {
+                            "lastXMinutes": "{{vars.request.data[\"lastXMinutes\"]}}"
+                        },
+                        "records": "{{vars.input.records}}"
+                    }
+                },
+                "_promptexpanded": true,
+                "triggerOnSource": true,
+                "executeButtonText": "Submit",
+                "noRecordExecution": true,
+                "showToasterMessage": {
+                    "visible": false,
+                    "messageVisible": true
+                },
+                "triggerOnReplicate": false,
+                "singleRecordExecution": false
+            },
+            "status": null,
+            "top": "30",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
+            "group": null,
+            "uuid": "a537bd79-9305-4c1c-a92d-c8d1e5fe65be"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Terminate Playbooks",
+            "description": "Terminates all data ingestion playbooks which are stuck in awaiting state.",
+            "arguments": {
+                "when": "{{vars.dataset_awaiting_paybooks}}",
+                "params": {
+                    "iri": "\/api\/wf\/workflow\/revoke\/tasks\/?format=json",
+                    "body": "{\"wfLogId\":{{vars.item.WFID.split(\"\/\")[-2]}},\"user\":\"{{vars.user}}\"}",
+                    "method": "POST"
+                },
+                "version": "3.2.5",
+                "for_each": {
+                    "item": "{{vars.dataset_awaiting_paybooks}}",
+                    "__bulk": false,
+                    "parallel": true,
+                    "condition": ""
+                },
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "980",
+            "left": "120",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "e212ab38-c8dc-4638-b04c-c3787ef50fff"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "API CALL -> Awaiting Playbook List",
+            "targetStep": "\/api\/3\/workflow_steps\/ce74c0c3-937e-454a-9b2e-2487d5dce8a6",
+            "sourceStep": "\/api\/3\/workflow_steps\/6525d7a2-bacd-434c-9497-e364d055e2c0",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "fc5666f9-d321-48ec-80b9-2295adebecaf"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configuration -> API CALL",
+            "targetStep": "\/api\/3\/workflow_steps\/6525d7a2-bacd-434c-9497-e364d055e2c0",
+            "sourceStep": "\/api\/3\/workflow_steps\/a0f27e71-da89-4f3a-bad8-8d5628633cf8",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9623c7e7-fd9c-413c-94d4-52914055e20d"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configurations1 -> Configuration",
+            "targetStep": "\/api\/3\/workflow_steps\/a0f27e71-da89-4f3a-bad8-8d5628633cf8",
+            "sourceStep": "\/api\/3\/workflow_steps\/67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "d9439694-75f1-4145-a980-08a4647c33d3"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Create DataSet -> Is Send Notification",
+            "targetStep": "\/api\/3\/workflow_steps\/02952ca1-535a-40cc-934b-28c72c5e0e1d",
+            "sourceStep": "\/api\/3\/workflow_steps\/ce74c0c3-937e-454a-9b2e-2487d5dce8a6",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9207a860-d9fc-422e-8466-086cfacd97bf"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Is Send Notification -> Send Notification",
+            "targetStep": "\/api\/3\/workflow_steps\/65ff0e1c-ae72-4bb3-9cf0-7ae1a45d5c80",
+            "sourceStep": "\/api\/3\/workflow_steps\/02952ca1-535a-40cc-934b-28c72c5e0e1d",
+            "label": "Yes",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "0789efe2-c75a-4678-842e-0fd8dd3000cf"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Is Send Notification -> Terminate Playbooks",
+            "targetStep": "\/api\/3\/workflow_steps\/e212ab38-c8dc-4638-b04c-c3787ef50fff",
+            "sourceStep": "\/api\/3\/workflow_steps\/02952ca1-535a-40cc-934b-28c72c5e0e1d",
+            "label": "No",
+            "isExecuted": false,
+            "group": null,
+            "uuid": "af72698f-86c9-49fe-8522-9752023afdad"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Send Notification -> Terminate Playbooks",
+            "targetStep": "\/api\/3\/workflow_steps\/e212ab38-c8dc-4638-b04c-c3787ef50fff",
+            "sourceStep": "\/api\/3\/workflow_steps\/65ff0e1c-ae72-4bb3-9cf0-7ae1a45d5c80",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "2f6845aa-5b9c-4641-ad7a-239d7f9ed09c"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Configurations",
+            "targetStep": "\/api\/3\/workflow_steps\/67fce7c4-b5c0-4ae2-8d5d-3dc01d7724ad",
+            "sourceStep": "\/api\/3\/workflow_steps\/a537bd79-9305-4c1c-a92d-c8d1e5fe65be",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "44a4b3f4-4412-423e-b66e-e0b1aea4f0d8"
+        }
+    ],
+    "groups": [],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "286a9290-2abe-4767-ab43-9122ece60933",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "ManualTrigger"
+    ]
+}

@@ -1,0 +1,214 @@
+{
+    "@type": "Workflow",
+    "triggerLimit": null,
+    "name": "Terminate Pending Manual Inputs",
+    "aliasName": null,
+    "tag": null,
+    "description": "Terminates all manual input pending for user action\/inputs that have been created before the specified timestamp.",
+    "isActive": true,
+    "debug": false,
+    "singleRecordExecution": false,
+    "remoteExecutableFlag": false,
+    "parameters": [],
+    "synchronous": false,
+    "collection": "\/api\/3\/workflow_collections\/503555f4-07bd-4d56-b732-63defb0d3e76",
+    "versions": [],
+    "triggerStep": "\/api\/3\/workflow_steps\/0a825e19-1aa0-4948-8db5-68d640f8cdbe",
+    "steps": [
+        {
+            "@type": "WorkflowStep",
+            "name": "Configurations",
+            "description": "Limit: Limit for maximum awaiting manual input to fetch.\noffset: Starting index of the awaiting manual input to fetch, default is 0",
+            "arguments": {
+                "limit": "10000",
+                "offset": "0",
+                "delete_old_records_to_till_date": "{{vars.input.params.tillDate}}"
+            },
+            "status": null,
+            "top": "165",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "db553f46-9b9d-4473-8785-cbf171d9c43a"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Filter manual input to be deleted",
+            "description": "Filtering manual input to be terminated",
+            "arguments": {
+                "manual_input_records": "{{vars.steps.Retrieves_all_Pending_Manual_Inputs.data[\"hydra:member\"] | json_query(\"[?created<='\"+vars.delete_old_records_to_till_date+\"']\")}}"
+            },
+            "status": null,
+            "top": "435",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/04d0cf46-b6a8-42c4-8683-60a7eaa69e8f",
+            "group": null,
+            "uuid": "8d54bdd9-5f12-4f82-b68b-04e01f3990f2"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Retrieves all Pending Manual Inputs",
+            "description": "Retrieves a list of manual inputs that are awaiting user action.",
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/wf\/api\/manual-wf-input\/list_wfinput\/?format=json&limit={{vars.limit}}&offset={{vars.offset}}&ordering=-id&unauthenticated_input=false",
+                    "body": "{\"assigned_to\":\"all\",\"is_approval\":false}",
+                    "method": "POST"
+                },
+                "version": "3.2.5",
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "300",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "9e8e5d3d-7101-4424-985b-a1f575ed766b"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Start",
+            "description": null,
+            "arguments": {
+                "route": "4657d2cb-d43d-449f-b7f8-7b2f91b9e378",
+                "resources": [
+                    "alerts"
+                ],
+                "__triggerLimit": true,
+                "inputVariables": [
+                    {
+                        "name": "tillDate",
+                        "type": "integer",
+                        "label": "Till Date",
+                        "title": "Date\/Time Field",
+                        "usable": true,
+                        "tooltip": "Select the DateTime using which you want to delete manual input records that have been created before the specified timestamp.",
+                        "dataType": "datetime",
+                        "formType": "datetime",
+                        "required": true,
+                        "_expanded": true,
+                        "mmdUpdate": true,
+                        "collection": false,
+                        "searchable": true,
+                        "templateUrl": "app\/components\/form\/fields\/datetime.html",
+                        "defaultValue": null,
+                        "_previousName": "deleteRecordTillDate",
+                        "playbookField": true,
+                        "lengthConstraint": false,
+                        "allowedEncryption": false,
+                        "allowedGridColumn": true,
+                        "jinjaExpressionView": true,
+                        "useRecordFieldDefault": false
+                    }
+                ],
+                "step_variables": {
+                    "input": {
+                        "params": {
+                            "tillDate": "{{vars.request.data[\"tillDate\"]}}"
+                        },
+                        "records": "{{vars.input.records}}"
+                    }
+                },
+                "_promptexpanded": true,
+                "triggerOnSource": true,
+                "executeButtonText": "Submit",
+                "noRecordExecution": true,
+                "showToasterMessage": {
+                    "visible": false,
+                    "messageVisible": true
+                },
+                "triggerOnReplicate": false,
+                "singleRecordExecution": false
+            },
+            "status": null,
+            "top": "30",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
+            "group": null,
+            "uuid": "0a825e19-1aa0-4948-8db5-68d640f8cdbe"
+        },
+        {
+            "@type": "WorkflowStep",
+            "name": "Terminates Manual Inputs",
+            "description": "Deleting filtered manual input",
+            "arguments": {
+                "params": {
+                    "iri": "\/api\/wf\/api\/manual-wf-input\/{{vars.item.id}}\/?format=json",
+                    "body": "",
+                    "method": "DELETE"
+                },
+                "version": "3.2.5",
+                "for_each": {
+                    "item": "{{vars.manual_input_records}}",
+                    "__bulk": false,
+                    "parallel": true,
+                    "condition": ""
+                },
+                "connector": "cyops_utilities",
+                "operation": "make_cyops_request",
+                "operationTitle": "FSR: Make FortiSOAR API Call",
+                "step_variables": []
+            },
+            "status": null,
+            "top": "570",
+            "left": "125",
+            "stepType": "\/api\/3\/workflow_step_types\/0109f35d-090b-4a2b-bd8a-94cbc3508562",
+            "group": null,
+            "uuid": "4ccc0513-783e-4a04-b338-aed2bab878a0"
+        }
+    ],
+    "routes": [
+        {
+            "@type": "WorkflowRoute",
+            "name": "Configurations -> Get Pending Manual Input",
+            "targetStep": "\/api\/3\/workflow_steps\/9e8e5d3d-7101-4424-985b-a1f575ed766b",
+            "sourceStep": "\/api\/3\/workflow_steps\/db553f46-9b9d-4473-8785-cbf171d9c43a",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "1248ffac-ec93-4213-96e3-2b5465a9e6f4"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get MI -> Get Old MI",
+            "targetStep": "\/api\/3\/workflow_steps\/8d54bdd9-5f12-4f82-b68b-04e01f3990f2",
+            "sourceStep": "\/api\/3\/workflow_steps\/9e8e5d3d-7101-4424-985b-a1f575ed766b",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "a7dde089-c961-4f31-9c1d-53165f77ab97"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Get Old Manual Input -> Delete Old Manual Input",
+            "targetStep": "\/api\/3\/workflow_steps\/4ccc0513-783e-4a04-b338-aed2bab878a0",
+            "sourceStep": "\/api\/3\/workflow_steps\/8d54bdd9-5f12-4f82-b68b-04e01f3990f2",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "09b06abd-e1d0-4826-98a1-723748b1feb5"
+        },
+        {
+            "@type": "WorkflowRoute",
+            "name": "Start -> Configurations",
+            "targetStep": "\/api\/3\/workflow_steps\/db553f46-9b9d-4473-8785-cbf171d9c43a",
+            "sourceStep": "\/api\/3\/workflow_steps\/0a825e19-1aa0-4948-8db5-68d640f8cdbe",
+            "label": null,
+            "isExecuted": false,
+            "group": null,
+            "uuid": "9bafcab1-fdb4-440c-b3a3-78248e8de6ef"
+        }
+    ],
+    "groups": [],
+    "priority": "\/api\/3\/picklists\/2b563c61-ae2c-41c0-a85a-c9709585e3f2",
+    "uuid": "690c3ee3-e16d-4e82-bfd6-b21e6df7e72b",
+    "owners": [],
+    "isPrivate": false,
+    "deletedAt": null,
+    "recordTags": [
+        "ManualTrigger"
+    ]
+}
